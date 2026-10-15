@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['.github/workflows/android.yml', 'assets/**']
+    paths: ['.github/workflows/android.yml']
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,12 +16,39 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - name: Install
         run: npm install
       - name: Add Android project
         run: npx cap add android
       - name: App icon
-        run: cp -r assets/android-res/. android/app/src/main/res/
+        run: |
+          pip install pillow
+          python3 - <<'PY'
+          import os
+          from PIL import Image, ImageDraw
+          only = Image.open('assets/icon-only.png').convert('RGBA')
+          fg = Image.open('assets/icon-foreground.png').convert('RGBA')
+          res = 'android/app/src/main/res'
+          launcher = {'mdpi': 48, 'hdpi': 72, 'xhdpi': 96, 'xxhdpi': 144, 'xxxhdpi': 192}
+          foreground = {'mdpi': 108, 'hdpi': 162, 'xhdpi': 216, 'xxhdpi': 324, 'xxxhdpi': 432}
+          for d, n in launcher.items():
+              folder = res + '/mipmap-' + d
+              os.makedirs(folder, exist_ok=True)
+              icon = only.resize((n, n), Image.LANCZOS)
+              icon.convert('RGB').save(folder + '/ic_launcher.png')
+              mask = Image.new('L', (n * 4, n * 4), 0)
+              ImageDraw.Draw(mask).ellipse((0, 0, n * 4 - 1, n * 4 - 1), fill=255)
+              mask = mask.resize((n, n), Image.LANCZOS)
+              rnd = Image.new('RGBA', (n, n), (0, 0, 0, 0))
+              rnd.paste(icon, (0, 0), mask)
+              rnd.save(folder + '/ic_launcher_round.png')
+              fg.resize((foreground[d], foreground[d]), Image.LANCZOS).save(folder + '/ic_launcher_foreground.png')
+          os.makedirs(res + '/values', exist_ok=True)
+          open(res + '/values/ic_launcher_background.xml', 'w').write('<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#CFE0FF</color>\n</resources>\n')
+          PY
       - name: Sync web files
         run: npx cap sync android
       - name: Add alarm sounds
