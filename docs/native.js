@@ -2,6 +2,8 @@
 (function () {
   var C = window.Capacitor;
   if (!C || !C.isNativePlatform || !C.isNativePlatform()) return;
+  var AP = C.Plugins && C.Plugins.App;
+  if (AP && AP.addListener) AP.addListener('backButton', function () { if (window.appBack) window.appBack(); });
   var LN = C.Plugins && C.Plugins.LocalNotifications;
   if (!LN) return;
 

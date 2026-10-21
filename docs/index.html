@@ -83,7 +83,7 @@ summary{cursor:pointer;list-style:none;display:flex;justify-content:space-betwee
 <details class="card"><summary><b>알람 소리</b> <span class="small" id="snow"></span></summary><p>안드로이드 앱에서 약·접종 알림이 울릴 때 나는 소리예요. 웹에서는 미리듣기만 돼요.</p><div id="sbox2" style="margin-top:10px"></div></details>
 <div class="card" style="background:var(--p-lav2)"><b>백업 · 복원</b><p>기록은 이 기기의 브라우저에만 저장돼요. 백업 내용을 복사해 메모 등에 보관해 두면, 나중에 아래 칸에 붙여넣어 복원할 수 있어요.</p><textarea id="bkt" rows="4" placeholder="백업 내용이 여기에 나타나요. 복원할 때는 여기에 붙여넣으세요."></textarea><div class="row2"><button onclick="bk()">백업 내용 만들기</button><button onclick="rs()">이 내용으로 복원</button></div></div>
 <div class="card"><b>데이터 삭제</b><p>모든 아이와 기록, 체중, 접종, 약 정보를 지워요. 되돌릴 수 없어요.</p><button id="wipe" class="x" style="background:var(--p-wipe);color:var(--warn);border-radius:12px;padding:12px 14px;font-size:14px" onclick="wipeAll()">모든 기록 삭제</button></div>
-<div class="card"><b>앱 정보</b><p>너의 꽃길 · 아이들의 기록장<br>글씨체: 고운바탕</p></div></section>
+<div class="card"><b>앱 정보</b><p>너의 꽃길 · 아이들의 기록장<br>글씨체: 고운바탕<br>앱 버전: 2026.10.21 (뒤로가기 개선)</p></div></section>
 </main><nav><button data-p="home" class="sel" onclick="go('home')">홈</button><button data-p="cal" onclick="go('cal')">달력</button><button data-p="health" onclick="go('health')">건강</button><button data-p="med" onclick="go('med')">약</button><button data-p="pet" onclick="go('pet')">아이</button></nav></div>
 <div class="sheet" id="sh"><div class="sbg" onclick="cs()"></div><div class="sbox" id="sbox"></div></div><div class="toast" id="toast"></div>
 <script>
@@ -283,11 +283,16 @@ function drawSnd(){$('snow').textContent='· '+(SNDS.find(s=>s[0]===snd)||SNDS[0
 function playSnd(id){try{if(aud)aud.pause();aud=new Audio('sounds/'+id+'.wav');const p=aud.play();if(p&&p.catch)p.catch(()=>toast('소리가 나지 않아요. 휴대폰 무음을 풀어 주세요'))}catch(e){toast('소리를 재생할 수 없어요')}}
 function setSnd(id){snd=id;sv('imbonote_sound',id);drawSnd();playSnd(id);toast('알람 소리를 바꿨어요')}
 drawSnd();
-let leaving=false;
+let leaving=false,lastBack=0;
+/* 뒤로가기: ① 열린 창이 있으면 닫기 ② 다른 화면이면 홈으로 ③ 홈에서 3초 안에 한 번 더 누르면 종료 팝업 */
 function appBack(){
   if($('sh').classList.contains('on')){cs();return}
+  const now=Date.now(),twice=now-lastBack<3000;
+  lastBack=now;
   if(document.querySelector('.page.on').id!=='home'){go('home');return}
-  sh('종료할까요?','<p>앱을 종료할까요?</p><div class="row2"><button onclick="cs()">취소</button><button onclick="doExit()">종료</button></div>')
+  if(!twice){toast('뒤로가기를 한 번 더 누르면 종료 창이 떠요');return}
+  lastBack=0;$('toast').classList.remove('on');
+  sh('앱 종료','<p style="font-size:16px;color:var(--ink);margin:6px 0 16px">앱을 종료할까요?</p><div class="row2"><button onclick="cs()">취소</button><button onclick="doExit()">확인</button></div>')
 }
 function doExit(){
   const A=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.App;
@@ -295,9 +300,13 @@ function doExit(){
   cs();leaving=true;try{window.close()}catch(e){}history.go(-2);
   setTimeout(()=>{leaving=false;toast('브라우저에서는 탭을 직접 닫아 주세요')},700)
 }
+/* 보조 장치: 앱(APK)에서는 native.js 가 뒤로가기 신호를 직접 받지만, 혹시 못 받아도 앱이 갑자기 꺼지지 않도록
+   인터넷 화면(크롬)과 같은 방식(주소 기록 이용)으로도 한 번 더 받아 둬요. 둘 중 하나만 일하니 겹치지 않아요 */
 (function(){let framed=false;try{framed=window.top!==window}catch(e){framed=true}
-  if(framed||(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()))return;
-  addEventListener('pointerup',function(){history.replaceState({a:1},'');history.pushState({a:2},'')},{once:true});
+  if(framed)return;
+  const arm=function(){history.replaceState({a:1},'');history.pushState({a:2},'')};
+  if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform())arm();
+  else addEventListener('pointerup',arm,{once:true});
   addEventListener('popstate',function(){if(leaving||!history.state||history.state.a!==1)return;history.pushState({a:2},'');appBack()})
 })();
 all();shareUi();setInterval(()=>{try{mdraw();sum()}catch(e){}},60000);
