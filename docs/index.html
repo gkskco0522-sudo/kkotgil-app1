@@ -1,6 +1,7 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>너의 꽃길</title>
 <script>window.onerror=function(m,u,l,c){var e=document.getElementById("err");if(e){e.style.display="block";e.textContent="오류: "+m+" ("+l+":"+c+")"}};</script>
 <script src="config.js"></script>
+<script>try{if(window.KG_SERVER&&!localStorage.getItem("kg_tok"))document.documentElement.classList.add("lgon")}catch(e){}</script>
 <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#FBFAFF;--app:#FBFAFF;--card:#FFFFFF;--tile:#FFFFFF;--ink:#1F2A5C;--sub:#4A5688;--mute:#66719F;--line:#E4E8FA;--btn:#CFE0FF;--btnink:#1F2A5C;--bar:#4558C8;--track:#E4E8FA;--warn:#D6455D;--soon:#B8741A;--in:#FFFFFF;--inbd:#D5DBF5;--tb:#E4E8FA;--av:#EEF1FF;color-scheme:light;--hero:#CFE0FF;--hi:#1F2A5C;--hs:#3D4A7E;--hc:rgba(255,255,255,.65);--p-peach:#FFD6C9;--p-sky:#CDEBFF;--p-lime:#E3F5C8;--p-rose:#FFD3E6;--p-pink:#FFD3E6;--p-sun:#FFF0B3;--p-mint:#C9F2E6;--p-lav:#E2D9FF;--p-lav2:#EEF1FF;--p-lav3:#EDE6FF;--p-grey:#EEF0F8;--p-blush:#EEF1FF;--p-cream:#FFF6D6;--p-wipe:#FFE0E6;--p-skybd:#8FB8E8;--p-pillink:#1F2A5C;--rmx:rgba(255,255,255,.7);
@@ -54,6 +55,11 @@ html{font-synthesis:none}
 .pb2{min-height:38px;padding:0 14px;border-radius:999px;background:var(--p-lav2);color:var(--ink);font-size:13px;font-weight:700;border:1px solid var(--line);cursor:pointer;font-family:inherit}.pb2.on{background:var(--bar);color:var(--btnink);border-color:var(--bar)}
 .ib svg{display:block}.ib{display:inline-flex;align-items:center;justify-content:center}
 summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;min-height:32px}summary::-webkit-details-marker{display:none}summary::after{content:"열기";font-size:13px;font-weight:700;color:var(--bar)}details[open]>summary::after{content:"닫기"}
+#lg{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:8;background:var(--app);overflow:auto;padding:calc(24px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px))}
+.lgon #lg{display:flex}.lgb{margin:auto;width:min(360px,100%);text-align:center}.lgb img{height:124px;width:auto;margin:0 auto 6px;display:block}
+.lgb h1{font-size:32px;margin:6px 0 4px}.lgb .lgs{font-size:15px;color:var(--sub);margin:0 0 30px}.lgx{margin:14px 4px 6px;line-height:1.6}
+.lgskip{background:none;color:var(--mute);font-weight:400;font-size:14px;text-decoration:underline;margin-top:6px}
+html[data-theme="dark"] .lgb img{background:#fff;border-radius:16px;padding:6px 10px;box-sizing:border-box}
 </style><link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#CFE0FF">
@@ -77,27 +83,33 @@ summary{cursor:pointer;list-style:none;display:flex;justify-content:space-betwee
 <section id="pet" class="page"><button class="back" onclick="go('home')">홈으로</button><h2>아이 정보</h2><div class="card"><label>종류</label><div style="display:flex;gap:8px;margin:5px 0 12px"><button type="button" class="dc" id="ic1" onclick="setIc('🐶')">강아지</button><button type="button" class="dc" id="ic2" onclick="setIc('🐱')">고양이</button></div><label>홈 화면 색상</label><div id="cbox" class="chips"></div><label for="name">이름</label><input id="name" maxlength="20"><label for="sx">성별</label><select id="sx"><option value="">선택 안 함</option><option>남아</option><option>여아</option></select><label for="nu">중성화 여부</label><select id="nu"><option value="">선택 안 함</option><option value="완료">중성화 했어요</option><option value="미완료">아직 안 했어요</option></select><label for="ag">추정 나이</label><input id="ag"><label for="rn">동물등록번호</label><input id="rn" inputmode="numeric" maxlength="20" placeholder="15자리 숫자 (선택)"><label for="ct">칩 종류</label><select id="ct"><option value="">선택 안 함</option><option>내장칩</option><option>외장칩</option></select><label for="cd">칩 이식 날짜</label><input type="date" id="cd"><label for="nt">성격 / 주의사항</label><textarea id="nt" rows="4"></textarea><label>사진</label><input type="file" accept="image/*" onchange="photo(event)"><button onclick="savePet()">저장하기</button><button id="rm" class="x" style="margin-top:12px;display:block" onclick="rmDog()">이 아이 삭제</button></div>
 </section>
 <section id="set" class="page"><button class="back" onclick="go('home')">홈으로</button><h2>설정</h2>
+<div class="card" id="acct" style="display:none"></div>
 <div class="card"><b>공유 코드 만들기</b><p id="shint">아이 정보를 다른 사람에게 보내는 코드예요. 받은 사람이 아래 '공유 코드로 아이 추가'에 붙여넣으면 돼요. 사진은 포함되지 않아요.</p><label for="spet">아이</label><select id="spet"></select><label style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" id="sinc" style="width:auto;margin:0"> 기록도 함께 보내기 (접종·체중·약·일상 기록)</label><button class="btn" style="margin-top:10px" onclick="mkCode()">코드 만들고 복사하기</button><textarea id="sct" rows="3" readonly style="margin-top:10px" placeholder="코드가 여기에 나타나요"></textarea><div style="display:flex;gap:10px;align-items:center"><button onclick="cpCode()">복사</button><span class="small" id="slen"></span></div><p class="small" id="shnote" style="display:none">숫자 코드를 만들면 아이 정보가 서버에 24시간 동안 임시로 보관돼요. 받은 사람이 불러오면 바로 지워져요.</p></div>
 <div class="card"><b>공유 코드로 아이 추가</b><p>받은 코드를 입력하거나 붙여넣으면 그 아이의 정보가 이 기기에 추가돼요. 같은 아이를 다시 불러오면 최신 내용으로 덮어써요.</p><textarea id="imc" rows="2" placeholder="공유 코드 붙여넣기" autocomplete="off"></textarea><button onclick="impCode()">아이 불러오기</button><p class="small" id="imnote" style="display:none;margin-bottom:0">숫자 코드는 만든 뒤 24시간 안에, 한 번만 쓸 수 있어요.</p></div>
 <div class="card"><b>화면 모드</b><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="dc" id="th_light" onclick="setTh('light')">라이트</button><button class="dc" id="th_dark" onclick="setTh('dark')">다크</button><button class="dc" id="th_auto" onclick="setTh('auto')">기기 설정</button></div></div>
 <details class="card"><summary><b>알람 소리</b> <span class="small" id="snow"></span></summary><p>안드로이드 앱에서 약·접종 알림이 울릴 때 나는 소리예요. 웹에서는 미리듣기만 돼요.</p><div id="sbox2" style="margin-top:10px"></div></details>
-<div class="card" style="background:var(--p-lav2)"><b>백업 · 복원</b><p>기록은 이 기기의 브라우저에만 저장돼요. 백업 내용을 복사해 메모 등에 보관해 두면, 나중에 아래 칸에 붙여넣어 복원할 수 있어요.</p><textarea id="bkt" rows="4" placeholder="백업 내용이 여기에 나타나요. 복원할 때는 여기에 붙여넣으세요."></textarea><div class="row2"><button onclick="bk()">백업 내용 만들기</button><button onclick="rs()">이 내용으로 복원</button></div></div>
-<div class="card"><b>데이터 삭제</b><p>모든 아이와 기록, 체중, 접종, 약 정보를 지워요. 되돌릴 수 없어요.</p><button id="wipe" class="x" style="background:var(--p-wipe);color:var(--warn);border-radius:12px;padding:12px 14px;font-size:14px" onclick="wipeAll()">모든 기록 삭제</button></div>
-<div class="card"><b>앱 정보</b><p>너의 꽃길 · 아이들의 기록장<br>글씨체: 고운바탕<br>앱 버전: 2026.10.21 (뒤로가기 개선)</p></div></section>
+<div class="card" style="background:var(--p-lav2)"><b>백업 · 복원</b><p>기록은 이 기기에 저장돼요. (구글 계정으로 로그인하면 내 계정에도 저장돼요.) 백업 내용을 복사해 메모 등에 보관해 두면, 나중에 아래 칸에 붙여넣어 복원할 수 있어요.</p><textarea id="bkt" rows="4" placeholder="백업 내용이 여기에 나타나요. 복원할 때는 여기에 붙여넣으세요."></textarea><div class="row2"><button onclick="bk()">백업 내용 만들기</button><button onclick="rs()">이 내용으로 복원</button></div></div>
+<div class="card"><b>데이터 삭제</b><p>모든 아이와 기록, 체중, 접종, 약 정보를 지워요. 되돌릴 수 없어요.<span id="wipenote"></span></p><button id="wipe" class="x" style="background:var(--p-wipe);color:var(--warn);border-radius:12px;padding:12px 14px;font-size:14px" onclick="wipeAll()">모든 기록 삭제</button></div>
+<div class="card"><b>앱 정보</b><p>너의 꽃길 · 아이들의 기록장<br>글씨체: 고운바탕<br>앱 버전: 2026.10.23 (계정 로그인)</p></div></section>
 </main><nav><button data-p="home" class="sel" onclick="go('home')">홈</button><button data-p="cal" onclick="go('cal')">달력</button><button data-p="health" onclick="go('health')">건강</button><button data-p="med" onclick="go('med')">약</button><button data-p="pet" onclick="go('pet')">아이</button></nav></div>
 <div class="sheet" id="sh"><div class="sbg" onclick="cs()"></div><div class="sbox" id="sbox"></div></div><div class="toast" id="toast"></div>
+<div id="lg" role="dialog" aria-modal="true" aria-label="로그인"><div class="lgb"><img id="lgimg" alt=""><h1>너의 꽃길</h1><p class="lgs">아이들의 기록장</p><button class="btn" id="lgbtn" onclick="kgLogin()">Google 계정으로 시작하기</button><p class="small" id="lgm" style="min-height:18px;margin-top:10px"></p><p class="small lgx">처음이면 계정이 자동으로 만들어져요.<br>다른 폰에서 같은 계정으로 로그인하면<br>지금까지의 기록이 그대로 옮겨져요.</p><button class="lgskip" onclick="kgSkip()">나중에 하기</button></div></div>
 <script>
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* 화면에 끼워 넣는 글은 esc(), 버튼(onclick) 속에 넣는 번호는 J() 로 감싸요. 이상한 글이 섞여 들어와도 그냥 글자로만 보이고 실행되지 않아요 */
+const J=v=>esc(JSON.stringify(v));
 function ld(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
-function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
+/* 계정에 맞출 기록 6가지. 저장하는 내용이 실제로 바뀌었을 때만 "올릴 게 있어요" 표시(kg_dirty)를 남겨요 */
+var kgSeq=0,kgReady=0;const SYNCK=['imbonote_dogs','imbonote_logs','imbonote_weights','imbonote_vacc','imbonote_meds','imbonote_taken'],DEF_NOTE='사람을 좋아해요. 새로운 환경에서는 천천히 적응해주세요.';
+function sv(k,v){try{const s=JSON.stringify(v),ch=SYNCK.indexOf(k)>=0&&localStorage.getItem(k)!==s;localStorage.setItem(k,s);if(ch){kgSeq++;try{localStorage.setItem('kg_dirty','1')}catch(e){}if(kgReady)kgSoon()}return true}catch(e){return false}}
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),2200)}
 function today(){const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
 function dday(s){const n=Math.round((new Date(s+'T00:00')-new Date(today()+'T00:00'))/864e5);return n<0?{n,t:'D+'+(-n)+' 지남',c:'over'}:n===0?{n,t:'오늘',c:'soon'}:{n,t:'D-'+n,c:n<=7?'soon':''}}
 function fd(s){const d=new Date(s+'T00:00');return (d.getMonth()+1)+'/'+d.getDate()}
 const pad=n=>String(n).padStart(2,'0');
 let dogs=ld('imbonote_dogs',null),cur=ld('imbonote_cur',null),logs=ld('imbonote_logs',[]),ws=ld('imbonote_weights',[]),vs=ld('imbonote_vacc',[]),rmArm=false;
-if(!dogs||!dogs.length){dogs=[{id:1,name:ld('imbonote_name','새 아이'),sex:'남아',age:'약 3개월',note:'사람을 좋아해요. 새로운 환경에서는 천천히 적응해주세요.',photo:ld('imbonote_photo','')}];sv('imbonote_dogs',dogs)}
+if(!dogs||!dogs.length){dogs=[{id:1,name:ld('imbonote_name','새 아이'),sex:'남아',age:'약 3개월',note:DEF_NOTE,photo:ld('imbonote_photo','')}];sv('imbonote_dogs',dogs)}
 dogs.forEach(d=>{if(d.name==='동구라미')d.name='새 아이'});
 if(!dogs.some(d=>d.id===cur))cur=dogs[0].id;
 [logs,ws,vs].forEach(a=>a.forEach(x=>{if(!x.dog)x.dog=dogs[0].id}));
@@ -118,24 +130,24 @@ function ath(){const dk=th==='dark'||(th==='auto'&&mq&&mq.matches);document.docu
 function setTh(t){th=t;sv('imbonote_theme',t);ath()}
 if(mq){const f=()=>{if(th==='auto')ath()};if(mq.addEventListener)mq.addEventListener('change',f);else if(mq.addListener)mq.addListener(f)}
 let cy=new Date().getFullYear(),cmo=new Date().getMonth(),sd=today();
-function drawDogs(){$('dogs').innerHTML=dogs.map(d=>'<button class="dc'+(d.id===cur?' on':'')+'" onclick="sel('+d.id+')">'+(d.photo?'<i><img src="'+esc(d.photo)+'" alt=""></i>':'')+esc(d.name||'이름 없음')+'</button>').join('')+'<button class="dc" onclick="addDog()">추가</button>'}
+function drawDogs(){$('dogs').innerHTML=dogs.map(d=>'<button class="dc'+(d.id===cur?' on':'')+'" onclick="sel('+J(d.id)+')">'+(d.photo?'<i><img src="'+esc(d.photo)+'" alt=""></i>':'')+esc(d.name||'이름 없음')+'</button>').join('')+'<button class="dc" onclick="addDog()">추가</button>'}
 function sel(id){if(id===cur){go('pet',2);return}cur=id;saveD();all()}
 function addDog(){const id=Date.now();dogs.push({id,ic:'🐶',hh:newHue(),name:'새 아이',sex:'',nu:'',age:'',note:'',rn:'',ct:'',cd:'',photo:''});cur=id;saveD();all();go('pet',2);toast('새 아이를 추가했어요. 정보를 입력해 주세요')}
 function setPh(u){$('av').innerHTML=u?'<img src="'+esc(u)+'" alt="">':'사진 추가';$('phh').textContent=u?'사진을 눌러 변경하세요':'사진을 눌러 등록하세요'}
 const HUES=[['기본',null],['분홍',350],['살구',25],['노랑',50],['연두',90],['초록',140],['민트',170],['하늘',200],['보라',260],['연보라',290],['핑크',320]];
 function drawColors(){const cur_=D().hh==null?null:D().hh;$('cbox').innerHTML=HUES.map(x=>'<button type="button" class="sw'+(cur_===x[1]?' on':'')+'"'+(x[1]==null?'':' data-hh="1" style="--hh:'+x[1]+'"')+' onclick="setHue('+x[1]+')">'+x[0]+'</button>').join('')+'<button type="button" class="sw rnd" onclick="setHue(newHue())">무작위</button>'}
-function setHue(h){D().hh=h;saveD();head();drawColors();toast('홈 화면 색을 바꿨어요')}
+function setHue(h){D().hh=h;D().u=Date.now();saveD();head();drawColors();toast('홈 화면 색을 바꿨어요')}
 function newHue(){const used=dogs.map(d=>d.hh==null?219:d.hh);let h,t=0;do{h=Math.floor(Math.random()*360);t++}while(t<40&&used.some(u=>{const f=Math.abs(h-u)%360;return Math.min(f,360-f)<40}));return h}
 function head(){const d=D();const hr=document.querySelector('.hero');if(hr){if(d.hh==null){hr.removeAttribute('data-hh');hr.style.removeProperty('--hh')}else{hr.setAttribute('data-hh','1');hr.style.setProperty('--hh',d.hh)}}$('nm').textContent=d.name||'이름 없음';$('pi').innerHTML=[[d.sex,d.nu==='완료'?'중성화 완료':d.nu==='미완료'?'중성화 전':'',d.age].filter(Boolean).join(' · '),d.note,d.rn?'등록번호 '+d.rn:'',(d.ct||d.cd)?''+[d.ct,d.cd?d.cd.replace(/-/g,'.')+(d.ct==='외장칩'?' 장착':' 이식'):''].filter(Boolean).join(' · '):''].filter(Boolean).map(esc).join('<br>');setPh(d.photo);}
 function fillPet(){const d=D();$('ic1').classList.toggle('on',(d.ic||'🐶')==='🐶');$('ic2').classList.toggle('on',d.ic==='🐱');$('name').value=d.name||'';const sx=$('sx');if(d.sex&&!Array.prototype.slice.call(sx.options).some(o=>o.value===d.sex))sx.add(new Option(d.sex,d.sex));sx.value=d.sex||'';$('nu').value=d.nu||'';$('ag').value=d.age||'';$('nt').value=d.note||'';$('rn').value=d.rn||'';$('ct').value=d.ct||'';$('cd').value=d.cd||'';rmArm=false;rmLbl(false)}
-function setIc(i){D().ic=i;saveD();drawDogs();fillPet()}
-function savePet(){const d=D();d.name=$('name').value.trim()||'이름 없음';d.sex=$('sx').value;d.nu=$('nu').value;d.age=$('ag').value.trim();d.note=$('nt').value.trim();d.rn=$('rn').value.trim();d.ct=$('ct').value;d.cd=$('cd').value;saveD();drawDogs();head();toast('저장했어요')}
+function setIc(i){D().ic=i;D().u=Date.now();saveD();drawDogs();fillPet()}
+function savePet(){const d=D();d.name=$('name').value.trim()||'이름 없음';d.sex=$('sx').value;d.nu=$('nu').value;d.age=$('ag').value.trim();d.note=$('nt').value.trim();d.rn=$('rn').value.trim();d.ct=$('ct').value;d.cd=$('cd').value;d.u=Date.now();saveD();drawDogs();head();toast('저장했어요')}
 function rmDog(){if(dogs.length<2){toast('마지막 한 마리는 삭제할 수 없어요');return}
   if(!rmArm){rmArm=true;rmLbl(true);setTimeout(()=>{rmArm=false;rmLbl(false)},3500);return}
   const id=cur;dogs=dogs.filter(d=>d.id!==id);logs=logs.filter(x=>x.dog!==id);ws=ws.filter(x=>x.dog!==id);vs=vs.filter(x=>x.dog!==id);meds=meds.filter(x=>x.dog!==id);sv('imbonote_meds',meds);cur=dogs[0].id;
   sv('imbonote_logs',logs);sv('imbonote_weights',ws);sv('imbonote_vacc',vs);saveD();all();go('home',0);toast('삭제했어요')}
 function rmLbl(on){$('rm').textContent=on?'한 번 더 누르면 기록과 함께 삭제돼요':'이 아이 삭제';$('rmx').textContent=on?'삭제할까요?':'삭제';$('rmx').classList.toggle('arm',on)}
-function photo(e){const inp=e.target,f=inp.files[0];if(!f)return;const r=new FileReader();r.onerror=()=>toast('사진을 읽지 못했어요');r.onload=()=>{const im=new Image();im.onerror=()=>toast('이 사진 형식은 지원하지 않아요. 다른 사진을 골라주세요');im.onload=()=>{const s=Math.min(1,400/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext('2d').drawImage(im,0,0,c.width,c.height);const u=c.toDataURL('image/jpeg',.85);D().photo=u;setPh(u);drawDogs();toast(sv('imbonote_dogs',dogs)?'사진을 등록했어요':'화면에는 보이지만 저장하지 못했어요');inp.value=''};im.src=r.result};r.readAsDataURL(f)}
+function photo(e){const inp=e.target,f=inp.files[0];if(!f)return;const r=new FileReader();r.onerror=()=>toast('사진을 읽지 못했어요');r.onload=()=>{const im=new Image();im.onerror=()=>toast('이 사진 형식은 지원하지 않아요. 다른 사진을 골라주세요');im.onload=()=>{const s=Math.min(1,400/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext('2d').drawImage(im,0,0,c.width,c.height);const u=c.toDataURL('image/jpeg',.85);D().photo=u;D().u=Date.now();setPh(u);drawDogs();toast(sv('imbonote_dogs',dogs)?'사진을 등록했어요':'화면에는 보이지만 저장하지 못했어요');inp.value=''};im.src=r.result};r.readAsDataURL(f)}
 function chart(){
   const a=mine(ws).slice().sort((x,y)=>x.d.localeCompare(y.d));
   if(a.length<2){$('chart').innerHTML='<p>체중을 2번 이상 기록하면 그래프가 그려져요.</p>';return}
@@ -144,12 +156,12 @@ function chart(){
   const X=d=>L+(t1-t0?(new Date(d)-t0)/(t1-t0):.5)*(W-L-R),Y=k=>T+(hi-k)/(hi-lo)*(H-T-B);
   const pts=a.map(p=>X(p.d).toFixed(1)+','+Y(p.k).toFixed(1)).join(' ');
   $('chart').innerHTML='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="체중 변화 그래프"><line x1="'+L+'" y1="'+(H-B)+'" x2="'+(W-R)+'" y2="'+(H-B)+'" stroke="var(--track)"/><text x="2" y="'+(T+4)+'" font-size="10" fill="var(--mute)">'+hi.toFixed(1)+'</text><text x="2" y="'+(H-B)+'" font-size="10" fill="var(--mute)">'+lo.toFixed(1)+'</text><polyline points="'+pts+'" fill="none" stroke="var(--bar)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>'+a.map(p=>'<circle cx="'+X(p.d).toFixed(1)+'" cy="'+Y(p.k).toFixed(1)+'" r="4" fill="var(--bar)"/>').join('')+'<text x="'+L+'" y="'+(H-8)+'" font-size="10" fill="var(--mute)">'+fd(a[0].d)+'</text><text x="'+(W-R)+'" y="'+(H-8)+'" font-size="10" text-anchor="end" fill="var(--mute)">'+fd(a[a.length-1].d)+'</text></svg>'}
-function drawW(){chart();const a=mine(ws).slice().sort((x,y)=>y.d.localeCompare(x.d));$('wlist').innerHTML=a.slice(0,6).map(p=>'<div class="log"><span>'+fd(p.d)+'</span><span><b>'+p.k+' kg</b><button class="x" aria-label="삭제" onclick="delW('+p.id+')">삭제</button></span></div>').join('')}
+function drawW(){chart();const a=mine(ws).slice().sort((x,y)=>y.d.localeCompare(x.d));$('wlist').innerHTML=a.slice(0,6).map(p=>'<div class="log"><span>'+fd(p.d)+'</span><span><b>'+esc(p.k)+' kg</b><button class="x" aria-label="삭제" onclick="delW('+J(p.id)+')">삭제</button></span></div>').join('')}
 function addW(){const k=parseFloat($('wk').value),d=$('wd').value||today();if(!(k>0)){toast('체중을 입력해 주세요');return}ws.push({id:Date.now(),dog:cur,d,k});sv('imbonote_weights',ws);$('wk').value='';drawW();toast('체중 기록 완료');cs()}
 function delW(id){ws=ws.filter(p=>p.id!==id);sv('imbonote_weights',ws);drawW()}
 function drawV(){
   const a=mine(vs).slice().sort((x,y)=>(x.n||'9999').localeCompare(y.n||'9999'));
-  $('vlist').innerHTML=a.length?a.map(v=>{const dd=v.n?dday(v.n):null;return '<div class="log"><span><b>'+esc(v.t)+(v.x?' ('+esc(v.x)+')':'')+'</b><br><span class="small">접종 '+(v.d?fd(v.d):'-')+(v.n?' · 예정 '+fd(v.n):'')+'</span></span><span>'+(dd?'<span class="dd '+dd.c+'">'+dd.t+'</span>':'')+'<button class="x" aria-label="삭제" onclick="delV('+v.id+')">삭제</button></span></div>'}).join(''):'<p>아직 접종 기록이 없어요.</p>';
+  $('vlist').innerHTML=a.length?a.map(v=>{const dd=v.n?dday(v.n):null;return '<div class="log"><span><b>'+esc(v.t)+(v.x?' ('+esc(v.x)+')':'')+'</b><br><span class="small">접종 '+(v.d?fd(v.d):'-')+(v.n?' · 예정 '+fd(v.n):'')+'</span></span><span>'+(dd?'<span class="dd '+dd.c+'">'+dd.t+'</span>':'')+'<button class="x" aria-label="삭제" onclick="delV('+J(v.id)+')">삭제</button></span></div>'}).join(''):'<p>아직 접종 기록이 없어요.</p>';
   const up=a.filter(v=>v.n),box=$('vbox');box.className='card alert';
   if(!up.length){$('vnext').innerHTML='<p>접종 예정일을 등록하면 여기에 D-day로 알려드려요.</p>';return}
   const v=up[0],dd=dday(v.n);if(dd.c)box.classList.add(dd.c);
@@ -164,19 +176,19 @@ function drawC(){
   $('cm').textContent=cy+'년 '+(cmo+1)+'월';
   let h=['일','월','화','수','목','금','토'].map(x=>'<div class="h">'+x+'</div>').join('')+'<div></div>'.repeat(first);
   for(let i=1;i<=days;i++){
-    const k=cy+'-'+pad(cmo+1)+'-'+pad(i),L=ml.filter(x=>x.d===k),g=L.reduce((s,x)=>s+(x.amt||0),0),vet=L.some(x=>x.type==='병원'),vd=mv2.some(v=>v.d===k),vn=mv2.some(v=>v.n===k);
+    const k=cy+'-'+pad(cmo+1)+'-'+pad(i),L=ml.filter(x=>x.d===k),g=L.reduce((s,x)=>s+(+x.amt||0),0),vet=L.some(x=>x.type==='병원'),vd=mv2.some(v=>v.d===k),vn=mv2.some(v=>v.n===k);
     h+='<button class="c'+(k===t?' today':'')+(k===sd?' sel':'')+'" onclick="pick(\''+k+'\')" aria-label="'+(cmo+1)+'월 '+i+'일"><span>'+i+'</span>'+(g?'<span class="m">'+g+'g</span>':'')+((vet||vd||vn)?'<span class="m">'+(vet?'🏥':'')+(vd?'💉':'')+(vn?'🔔':'')+'</span>':'')+'</button>';
   }
   $('cg').innerHTML=h;dayList();
 }
 function mdraw(){
   const all_=mine(meds).sort((x,y)=>x.h.localeCompare(y.h)),t=today(),now=new Date(),hm=pad(now.getHours())+':'+pad(now.getMinutes()),a=all_.filter(m=>occ(m,t));
-  $('mtoday').innerHTML=a.length?a.map(m=>{const k=m.id+'_'+t,ok=taken[k],late=!ok&&m.h<hm;return '<div class="log"><span><b>'+m.h+'</b> '+esc(m.n)+(m.d?' <span class="small">'+esc(m.d)+'</span>':'')+(late?' <span class="dd over">시간 지남</span>':'')+'</span><button class="x" style="font-size:14px;padding:6px 12px;border-radius:999px;background:'+(ok?'var(--p-mint)':'var(--p-grey)')+';color:var(--ink)" onclick="tk(\''+k+'\')">'+(ok?'먹임 완료':'먹였어요')+'</button></div>'}).join(''):'<p>'+(all_.length?'오늘 먹일 약이 없어요.':'아직 등록된 약이 없어요. 아래에서 추가해 보세요.')+'</p>';
-  $('mlist').innerHTML=all_.length?'<b style="font-size:13px">등록된 약</b>'+all_.map(m=>'<div class="log"><span>'+m.h+' · '+esc(m.n)+(m.d?' · '+esc(m.d):'')+'<br><span class="small">'+esc(rlabel(m))+'</span></span><button class="x" aria-label="삭제" onclick="delM('+m.id+')">삭제</button></span></div>').join(''):'';
+  $('mtoday').innerHTML=a.length?a.map(m=>{const k=m.id+'_'+t,ok=taken[k],late=!ok&&m.h<hm;return '<div class="log"><span><b>'+esc(m.h)+'</b> '+esc(m.n)+(m.d?' <span class="small">'+esc(m.d)+'</span>':'')+(late?' <span class="dd over">시간 지남</span>':'')+'</span><button class="x" style="font-size:14px;padding:6px 12px;border-radius:999px;background:'+(ok?'var(--p-mint)':'var(--p-grey)')+';color:var(--ink)" onclick="tk('+J(k)+')">'+(ok?'먹임 완료':'먹였어요')+'</button></div>'}).join(''):'<p>'+(all_.length?'오늘 먹일 약이 없어요.':'아직 등록된 약이 없어요. 아래에서 추가해 보세요.')+'</p>';
+  $('mlist').innerHTML=all_.length?'<b style="font-size:13px">등록된 약</b>'+all_.map(m=>'<div class="log"><span>'+esc(m.h)+' · '+esc(m.n)+(m.d?' · '+esc(m.d):'')+'<br><span class="small">'+esc(rlabel(m))+'</span></span><button class="x" aria-label="삭제" onclick="delM('+J(m.id)+')">삭제</button></span></div>').join(''):'';
   const nx=a.find(m=>!taken[m.id+'_'+t]);let h;
-  if(nx)h='<p><b style="font-size:15px;color:var(--ink)">'+esc(nx.n)+'</b> · '+nx.h+(nx.h<hm?' <span class="dd over">시간 지남</span>':'')+'</p>';
+  if(nx)h='<p><b style="font-size:15px;color:var(--ink)">'+esc(nx.n)+'</b> · '+esc(nx.h)+(nx.h<hm?' <span class="dd over">시간 지남</span>':'')+'</p>';
   else{h=all_.length?'<p>'+(a.length?'오늘 약을 모두 먹였어요':'오늘 먹일 약이 없어요')+'</p>':'<p>복용 시간을 등록하면 여기에 보여드려요.</p>';
-    for(let i=1;i<=60&&all_.length;i++){const dt=addDays(t,i),f=all_.find(m=>occ(m,dt));if(f){h+='<p class="small">다음 복용: '+fd(dt)+' '+f.h+' '+esc(f.n)+'</p>';break}}}
+    for(let i=1;i<=60&&all_.length;i++){const dt=addDays(t,i),f=all_.find(m=>occ(m,dt));if(f){h+='<p class="small">다음 복용: '+fd(dt)+' '+esc(f.h)+' '+esc(f.n)+'</p>';break}}}
   $('mnext').innerHTML=h;
 }
 function addM(){const n=$('mn').value.trim(),h=$('mh').value,rp=$('mrp').value;if(!n||!h){toast('약 이름과 시간을 입력해 주세요');return}
@@ -199,7 +211,7 @@ function kgPayload(){const d=dogs.find(x=>String(x.id)===$('spet').value)||D();i
   let c='KG2:'+d.sid+'^'+[ESC(d.name),d.ic==='🐱'?'c':'d',ESC(d.sex),d.nu==='완료'?'1':d.nu==='미완료'?'0':'',ESC(d.age),ESC(d.note),ESC(d.rn),d.ct==='내장칩'?'i':d.ct==='외장칩'?'o':'',d6(d.cd)].join('|');
   if($('sinc').checked)c+='^'+of(vs).map(v=>[ti(VT,v.t),d6(v.d),d6(v.n),ESC(v.x)].join('|')).join('~')+'^'+of(ws).map(w=>d6(w.d)+'|'+w.k).join('~')+'^'+of(meds).map(m=>[ESC(m.n),ESC(m.d),String(m.h).replace(':',''),m.rp||'d',(m.wd||[]).join(''),m.md||'',d6(m.od)].join('|')).join('~')+'^'+of(logs).map(l=>[ti(LT,l.type),ESC(l.memo),l.amt||'',d6(l.d)].join('|')).join('~');
   return c.replace(/\^+$/,'')}
-function fillSpet(){const s=$('spet');if(!s)return;const v=s.value||String(cur);s.innerHTML=dogs.map(d=>'<option value="'+d.id+'">'+esc(d.name||'이름 없음')+'</option>').join('');s.value=dogs.some(d=>String(d.id)===v)?v:String(cur)}
+function fillSpet(){const s=$('spet');if(!s)return;const v=s.value||String(cur);s.innerHTML=dogs.map(d=>'<option value="'+esc(d.id)+'">'+esc(d.name||'이름 없음')+'</option>').join('');s.value=dogs.some(d=>String(d.id)===v)?v:String(cur)}
 function cpCode(ok,bad){const t=$('sct');if(!t.value){toast('먼저 코드를 만들어 주세요');return}
   ok=typeof ok==='string'?ok:'복사했어요';bad=typeof bad==='string'?bad:'코드를 길게 눌러 복사해 주세요';
   t.focus();t.select();
@@ -242,15 +254,28 @@ function impText(t){try{t=t.normalize('NFKC');const i=t.indexOf('KG2:');if(i<0){
   t=t.slice(i+4).replace(/[\u200b-\u200d\ufeff]/g,'').trim();const P=t.split('^'),sid=P[0];if(!/^[a-z0-9]{3,24}$/.test(sid)){toast('코드 앞부분을 읽지 못했어요 ['+sid.slice(0,14)+']');return false}
   const g=(P[1]||'').split('|'),nd={name:UNE(g[0]).slice(0,20)||'새 아이',ic:g[1]==='c'?'🐱':'🐶',sex:UNE(g[2]).slice(0,10),nu:g[3]==='1'?'완료':g[3]==='0'?'미완료':'',age:UNE(g[4]).slice(0,20),note:UNE(g[5]).slice(0,300),rn:UNE(g[6]).slice(0,20),ct:g[7]==='i'?'내장칩':g[7]==='o'?'외장칩':'',cd:u6(g[8])};
   let d=dogs.find(x=>x.sid===sid),re=!!d;if(d)Object.assign(d,nd);else{d=Object.assign({id:Date.now(),sid,photo:'',hh:newHue()},nd);dogs.push(d)}
-  const id=d.id;let n=0;const rec=v=>v?v.split('~').slice(0,2000).map(r=>r.split('|')):[],nid=()=>Date.now()+(n++);
+  d.u=Date.now();const id=d.id;let n=0;const rec=v=>v?v.split('~').slice(0,2000).map(r=>r.split('|')):[],nid=()=>Date.now()+(n++);
   if(P.length>2)vs=vs.filter(x=>x.dog!==id).concat(rec(P[2]).map(f=>({id:nid(),dog:id,t:tf(VT,f[0]),d:u6(f[1]),n:u6(f[2]),x:UNE(f[3]).slice(0,40)})));
   if(P.length>2)ws=ws.filter(x=>x.dog!==id).concat(rec(P[3]).map(f=>({id:nid(),dog:id,d:u6(f[0]),k:parseFloat(f[1])})).filter(w=>w.d&&w.k>0));
   if(P.length>2)meds=meds.filter(x=>x.dog!==id).concat(rec(P[4]).map(f=>({id:nid(),dog:id,n:UNE(f[0]).slice(0,30),d:UNE(f[1]).slice(0,30),h:/^\d{4}$/.test(f[2]||'')?f[2].slice(0,2)+':'+f[2].slice(2):'',rp:'dwmo'.indexOf(f[3])>=0&&f[3]?f[3]:'d',wd:String(f[4]||'').split('').map(Number).filter(x=>x>=0&&x<=6),md:Math.min(31,Math.max(1,parseInt(f[5],10)||1)),od:u6(f[6])})).filter(m=>m.h&&!(m.rp==='o'&&!m.od)).map(m=>{if(m.rp==='w'&&!m.wd.length)m.rp='d';return m}));
   if(P.length>5)logs=logs.filter(x=>x.dog!==id).concat(rec(P[5]).map(f=>({id:nid(),dog:id,type:tf(LT,f[0]),memo:UNE(f[1]).slice(0,200),amt:Number(f[2])||0,d:u6(f[3]),time:u6(f[3])?fd(u6(f[3])):''})).filter(l=>l.d));
   sv('imbonote_logs',logs);sv('imbonote_weights',ws);sv('imbonote_vacc',vs);sv('imbonote_meds',meds);cur=id;saveD();$('imc').value='';all();go('home',0);toast(re?'최신 내용으로 업데이트했어요':'아이를 추가했어요');return true}catch(e){toast('코드를 읽지 못했어요. 전체를 다시 복사해 주세요');return false}}
 function bk(){const o={};KEYS.forEach(k=>{o[k]=ld(k,null)});const t=$('bkt');t.value=JSON.stringify(o);t.focus();t.select();toast('내용을 복사해서 보관하세요')}
-function rs(){try{const o=JSON.parse($('bkt').value);if(!o||!Array.isArray(o.imbonote_dogs))throw 0;KEYS.forEach(k=>{if(o[k]!=null)sv(k,o[k])});toast('복원했어요');setTimeout(()=>location.reload(),900)}catch(e){toast('백업 내용이 올바르지 않아요')}}
-function wipeAll(){if(!wipeArm){wipeArm=true;$('wipe').textContent='한 번 더 누르면 모두 삭제돼요';setTimeout(()=>{wipeArm=false;$('wipe').textContent='모든 기록 삭제'},3500);return}try{KEYS.forEach(k=>localStorage.removeItem(k))}catch(e){}location.reload()}
+/* 백업 검사: 모양이 이상하면 아무것도 바꾸지 않고 돌려보내요. 앱이 멈추거나 이상한 글이 끼어드는 것을 막아요 */
+function okBk(o){
+  const isO=v=>!!v&&typeof v==='object'&&!Array.isArray(v),num=v=>typeof v==='number'&&isFinite(v),
+    st=v=>v==null||typeof v==='string',nm=v=>v==null||num(v),
+    list=(a,f)=>a==null||(Array.isArray(a)&&a.length<=20000&&a.every(x=>isO(x)&&nm(x.id)&&nm(x.dog)&&f(x)));
+  return isO(o)&&Array.isArray(o.imbonote_dogs)&&o.imbonote_dogs.length>0&&nm(o.imbonote_cur)
+    &&list(o.imbonote_dogs,d=>num(d.id)&&nm(d.hh)&&nm(d.u)&&['name','sex','age','note','rn','ct','cd','nu','ic','photo','sid'].every(k=>st(d[k])))
+    &&list(o.imbonote_logs,x=>st(x.type)&&st(x.memo)&&st(x.d)&&nm(x.amt))
+    &&list(o.imbonote_weights,x=>typeof x.d==='string'&&num(x.k))
+    &&list(o.imbonote_vacc,x=>st(x.t)&&st(x.d)&&st(x.n)&&st(x.x))
+    &&list(o.imbonote_meds,x=>typeof x.h==='string'&&/^\d\d:\d\d$/.test(x.h)&&st(x.n)&&st(x.d)&&st(x.rp)&&st(x.od)&&nm(x.md)&&(x.wd==null||(Array.isArray(x.wd)&&x.wd.every(num))))
+    &&(o.imbonote_taken==null||isO(o.imbonote_taken))&&(o.imbonote_sound==null||typeof o.imbonote_sound==='string')
+}
+function rs(){try{const o=JSON.parse($('bkt').value);if(!okBk(o)){toast('백업 내용이 올바르지 않아요. 지금 기록은 그대로예요');return}KEYS.forEach(k=>{if(o[k]!=null)sv(k,o[k])});toast('복원했어요');setTimeout(()=>location.reload(),900)}catch(e){toast('백업 내용이 올바르지 않아요')}}
+function wipeAll(){if(kgTok()){kgWipeAsk();return}if(!wipeArm){wipeArm=true;$('wipe').textContent='한 번 더 누르면 모두 삭제돼요';setTimeout(()=>{wipeArm=false;$('wipe').textContent='모든 기록 삭제'},3500);return}try{KEYS.forEach(k=>localStorage.removeItem(k));['kg_rev','kg_sub','kg_dirty'].forEach(k=>localStorage.removeItem(k))}catch(e){}location.reload()}
 function tm(){const on=$('set').classList.contains('on');if(on){go('home',0)}else{go('set',-1)}$('menu').classList.toggle('on',!on)}
 function ath(){const dk=th==='dark'||(th==='auto'&&mq&&mq.matches);document.documentElement.dataset.theme=dk?'dark':'light';['light','dark','auto'].forEach(k=>$('th_'+k).classList.toggle('on',k===th))}
 function setTh(t){th=t;sv('imbonote_theme',t);ath()}
@@ -260,17 +285,17 @@ const TC={식사:'var(--p-peach)',물:'var(--p-sun)',배변:'var(--p-mint)',약:
 const pill=t=>'<span class="pill" style="background:'+(TC[t]||'var(--p-grey)')+'">'+esc(t)+'</span>';
 let rt='식사';
 logs.forEach((x,i)=>{if(!x.id)x.id=Date.now()+i});
-function go(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));$(id).classList.add('on');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('sel',b.dataset.p===id));$('menu').classList.toggle('on',id==='set');document.body.dataset.pg=id;scrollTo(0,0)}
+function go(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));$(id).classList.add('on');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('sel',b.dataset.p===id));$('menu').classList.toggle('on',id==='set');document.body.dataset.pg=id;scrollTo(0,0);if(id==='set')kgUi()}
 function sh(t,b){$('sbox').innerHTML='<div class="row" style="border:0;padding:0 0 10px"><b style="font-size:18px">'+t+'</b><button class="ib" onclick="cs()" aria-label="닫기">닫기</button></div>'+b;$('sh').classList.add('on')}
-function cs(){$('sh').classList.remove('on')}
+function cs(){$('sh').classList.remove('on');if(kgAskRes){const r=kgAskRes;kgAskRes=null;r(-1)}}
 function rec(t,d){rt=t||'식사';sh('기록 추가','<div class="chips" id="rtc"></div><div id="amtbox"><label class="l">먹은 양 (g)</label><div class="chips" id="amc"></div><input type="number" id="amt" inputmode="numeric" min="0" placeholder="직접 입력"></div><label class="l" for="memo">메모 (선택)</label><input id="memo" maxlength="100" placeholder="예: 산책 30분, 사료 한 컵"><label class="l" for="rd">날짜</label><input type="date" id="rd" value="'+(d||today())+'"><button class="btn" onclick="saveRec()">저장</button>');rtd()}
 function rtd(){$('rtc').innerHTML=Object.keys(EM).map(k=>'<button type="button" class="dc'+(k===rt?' on':'')+'" onclick="rt=\''+k+'\';rtd()">'+k+'</button>').join('');$('amtbox').style.display=rt==='식사'?'block':'none';$('amc').innerHTML=[50,100,150,200].map(n=>'<button type="button" class="dc" onclick="$(\'amt\').value='+n+'">'+n+'g</button>').join('')}
 function saveRec(){const amt=rt==='식사'?(parseInt($('amt').value,10)||0):0,d=$('rd').value||today();logs.unshift({id:Date.now(),dog:cur,type:rt,memo:$('memo').value.trim(),amt,d,time:fd(d)});sv('imbonote_logs',logs);cs();render();sum();drawC();toast(rt+' 기록 완료')}
 function delL(id){logs=logs.filter(x=>x.id!==id);sv('imbonote_logs',logs);render();sum();drawC()}
-function lrow(x){const t=[x.memo];if(x.amt&&x.memo!==x.amt+'g')t.push(x.amt+'g');return '<div class="log"><span>'+pill(x.type)+' '+esc(t.filter(Boolean).join(' · '))+'<br><span class="small">'+(x.d?fd(x.d):'')+'</span></span><button class="x" aria-label="삭제" onclick="delL('+x.id+')">삭제</button></div>'}
+function lrow(x){const t=[x.memo];if(x.amt&&x.memo!==x.amt+'g')t.push(x.amt+'g');return '<div class="log"><span>'+pill(x.type)+' '+esc(t.filter(Boolean).join(' · '))+'<br><span class="small">'+(x.d?fd(x.d):'')+'</span></span><button class="x" aria-label="삭제" onclick="delL('+J(x.id)+')">삭제</button></div>'}
 function render(){const a=mine(logs).slice().sort((x,y)=>(y.d||'').localeCompare(x.d||'')||y.id-x.id).slice(0,6);$('logs').innerHTML=a.length?a.map(lrow).join(''):'<p>아직 기록이 없어요. 위 버튼으로 첫 기록을 남겨보세요</p>'}
-function dayList(){const L=mine(logs).filter(x=>x.d===sd),g=L.reduce((s,x)=>s+(x.amt||0),0);$('dt').textContent=fd(sd)+(g?' · 식사 '+g+'g':'');$('dl').innerHTML=L.length?L.map(lrow).join(''):'<p>이 날은 기록이 없어요.</p>'}
-function sum(){const L=mine(logs).filter(x=>x.d===today()),g=L.reduce((s,x)=>s+(x.amt||0),0);$('s1').textContent=g?g+'g':'-';$('s2').textContent=L.filter(x=>x.type==='물').length||'-';$('s3').textContent=L.filter(x=>x.type==='배변').length||'-'}
+function dayList(){const L=mine(logs).filter(x=>x.d===sd),g=L.reduce((s,x)=>s+(+x.amt||0),0);$('dt').textContent=fd(sd)+(g?' · 식사 '+g+'g':'');$('dl').innerHTML=L.length?L.map(lrow).join(''):'<p>이 날은 기록이 없어요.</p>'}
+function sum(){const L=mine(logs).filter(x=>x.d===today()),g=L.reduce((s,x)=>s+(+x.amt||0),0);$('s1').textContent=g?g+'g':'-';$('s2').textContent=L.filter(x=>x.type==='물').length||'-';$('s3').textContent=L.filter(x=>x.type==='배변').length||'-'}
 function hseg(k){$('hw').style.display=k==='w'?'block':'none';$('hv').style.display=k==='v'?'block':'none';$('sg_w').classList.toggle('on',k==='w');$('sg_v').classList.toggle('on',k==='v')}
 function wsheet(){const L=mine(ws).slice().sort((a,b)=>b.d.localeCompare(a.d))[0];sh('체중 기록','<div class="row2"><div><label class="l" for="wd">날짜</label><input type="date" id="wd" value="'+today()+'"></div><div><label class="l" for="wk">체중 (kg)</label><input type="number" id="wk" step="0.01" min="0" inputmode="decimal" value="'+(L?L.k:'')+'" placeholder="예: 3.4"></div></div><button class="btn" onclick="addW()">저장</button>')}
 function vsheet(){sh('접종 기록','<label class="l" for="vt">종류</label><select id="vt" onchange="vtg()" oninput="vtg()">'+VT.map(v=>'<option>'+v+'</option>').join('')+'</select><div id="vrbox" style="display:none"><label class="l" for="vr">몇 차 접종인가요?</label><select id="vr"><option value="">선택 안 함</option><option>1차</option><option>2차</option><option>3차</option><option>4차</option><option>5차</option><option>추가접종</option></select></div><div id="vxbox" style="display:none"><label class="l" for="vx">어떤 구충을 했나요?</label><input id="vx" maxlength="40" placeholder="예: 내·외부 구충"></div><div class="row2"><div><label class="l" for="vd">접종한 날</label><input type="date" id="vd" value="'+today()+'"></div><div><label class="l" for="vn">다음 예정일</label><input type="date" id="vn"></div></div><button class="btn" onclick="addV()">저장</button>');vtg()}
@@ -289,7 +314,7 @@ function appBack(){
   if($('sh').classList.contains('on')){cs();return}
   const now=Date.now(),twice=now-lastBack<3000;
   lastBack=now;
-  if(document.querySelector('.page.on').id!=='home'){go('home');return}
+  if(document.querySelector('.page.on').id!=='home'&&!document.documentElement.classList.contains('lgon')){go('home');return}
   if(!twice){toast('뒤로가기를 한 번 더 누르면 종료 창이 떠요');return}
   lastBack=0;$('toast').classList.remove('on');
   sh('앱 종료','<p style="font-size:16px;color:var(--ink);margin:6px 0 16px">앱을 종료할까요?</p><div class="row2"><button onclick="cs()">취소</button><button onclick="doExit()">확인</button></div>')
@@ -309,5 +334,228 @@ function doExit(){
   else addEventListener('pointerup',arm,{once:true});
   addEventListener('popstate',function(){if(leaving||!history.state||history.state.a!==1)return;history.pushState({a:2},'');appBack()})
 })();
-all();shareUi();setInterval(()=>{try{mdraw();sum()}catch(e){}},60000);
+/* ───────── 계정 로그인 · 폰끼리 기록 맞추기 ─────────
+   구글 로그인은 서버(Worker)가 대신 처리해요. 앱은 "로그인 열쇠"만 받아서 이 폰에 보관해요.
+   기록은 통째로 서버에 올려 두고(번호 rev 로 순서를 맞춰요), 다른 폰에서 로그인하면 그대로 내려받아요.
+   확실하지 않을 때는 기록을 지우지 않고, 합치거나 멈춰요. */
+var kgT=0,kgBusy=0,kgAgain=0,kgStat='',kgM='',kgAskRes=null,kgLogBusy=0;
+const KGE={denied:'로그인이 취소됐거나, 허용되지 않은 계정이에요. 구글 설정의 "테스트 사용자"에 이 계정이 들어 있는지 확인해 주세요',expired:'로그인 시간이 지났어요. 버튼을 다시 눌러 주세요',fail:'구글 로그인을 확인하지 못했어요. 잠시 뒤 다시 시도해 주세요',conf:'서버에 구글 설정이 아직 안 돼 있어요. 안내서의 구글 설정을 먼저 해 주세요',who:'이 계정은 이 앱을 쓸 수 있는 목록에 없어요'};
+const lsGet=k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}};
+const lsSet=(k,v)=>{try{if(v==null||v==='')localStorage.removeItem(k);else localStorage.setItem(k,typeof v==='object'?JSON.stringify(v):String(v))}catch(e){}};
+const kgTok=()=>lsGet('kg_tok'),kgUser=()=>ld('kg_user',null),kgRev=()=>+lsGet('kg_rev')||0;
+const kgNative=()=>!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
+const kgB64=a=>{let s='';new Uint8Array(a).forEach(c=>{s+=String.fromCharCode(c)});return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')};
+const kgRand=n=>kgB64(crypto.getRandomValues(new Uint8Array(n)));
+const kgSha=async s=>kgB64(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)));
+const kgGet=()=>({imbonote_dogs:dogs,imbonote_logs:logs,imbonote_weights:ws,imbonote_vacc:vs,imbonote_meds:meds,imbonote_taken:taken});
+const kgCopy=()=>JSON.parse(JSON.stringify(kgGet()));
+const KLK=['imbonote_logs','imbonote_weights','imbonote_vacc','imbonote_meds'];
+
+/* 서버와 주고받기 (열쇠는 머리글로, 기록은 글자 그대로) */
+function kgReq(method,path,body,o){o=o||{};return new Promise(res=>{
+  let done=false,tm,ac=window.AbortController?new AbortController():null;
+  const bad={s:0,j:null,text:'',rev:-1},fin=r=>{if(!done){done=true;clearTimeout(tm);res(r)}};
+  if(!SRV()){fin(bad);return}
+  tm=setTimeout(()=>{fin(bad);try{if(ac)ac.abort()}catch(e){}},o.ms||20000);
+  const h={},t=o.noauth?'':kgTok();if(t)h.Authorization='Bearer '+t;if(body!=null)h['Content-Type']='text/plain;charset=UTF-8';
+  try{fetch(SRV()+path,{method,headers:h,body:body==null?undefined:body,cache:'no-store',signal:ac?ac.signal:undefined})
+    .then(r=>r.text().then(tx=>{let j=null;try{j=JSON.parse(tx)}catch(e){}const v=parseInt(r.headers.get('X-KG-Rev'),10);fin({s:r.status,j,text:tx,rev:isNaN(v)?-1:v})},()=>fin(bad)),()=>fin(bad))}catch(e){fin(bad)}})}
+
+/* 화면 */
+function kgMsg(t){kgM=t||'';kgUi();if(t)toast(t)}
+function kgShow(on){document.documentElement.classList.toggle('lgon',!!on);const a=document.querySelector('.app');if(a)a.inert=!!on}
+function kgSkip(){kgShow(false)}
+function kgAgo(t){const m=Math.floor((Date.now()-t)/6e4);return m<1?'방금 전':m<60?m+'분 전':m<1440?Math.floor(m/60)+'시간 전':new Date(t).toLocaleDateString('ko-KR')}
+function kgStatTxt(){
+  if(kgStat==='sync')return '저장하는 중이에요…';
+  if(kgStat==='off')return '인터넷에 연결되면 자동으로 저장돼요';
+  if(kgStat==='big')return '기록이 너무 커서 저장하지 못했어요. 사진을 줄이거나 지워 보세요';
+  if(kgStat==='bad')return '계정에 저장된 기록을 읽지 못했어요. 기록은 건드리지 않고 멈췄어요';
+  if(kgStat==='new')return '앱을 새 버전으로 업데이트해 주세요';
+  if(kgStat==='full')return '이 폰의 저장 공간이 부족해요';
+  if(lsGet('kg_dirty'))return '저장 대기 중이에요';
+  const t=+lsGet('kg_last')||0;return t?'모두 저장됐어요 · '+kgAgo(t):'아직 저장 전이에요'}
+function kgUi(){
+  const a=$('acct'),tok=kgTok(),u=kgUser(),wn=$('wipenote');
+  if(wn)wn.textContent=tok?' 로그인 중이라 계정에 저장된 기록도 함께 지워져요.':'';
+  const lm=$('lgm');if(lm)lm.textContent=kgM;
+  if(!a)return;
+  if(!SRV()){a.style.display='none';return}
+  a.style.display='';
+  if(!tok||!u){a.innerHTML='<b>내 계정</b><p>구글 계정으로 로그인하면 기록이 계정에 저장돼요. 다른 폰에서 같은 계정으로 로그인하면 지금까지의 기록을 그대로 이어서 볼 수 있어요.</p><button class="btn" style="margin-top:8px" onclick="kgLogin()">Google 계정으로 로그인</button><p class="small" id="kgm">'+esc(kgM)+'</p>';return}
+  a.innerHTML='<b>내 계정</b><p style="margin-top:8px"><b style="font-size:16px;color:var(--ink)">'+esc(u.name||'로그인함')+'</b><br>'+esc(u.email||'')+'</p><p class="small" id="kgst">'+esc(kgStatTxt())+'</p><button class="btn" style="margin-top:6px" onclick="kgNow()">지금 맞추기</button><div class="row2" style="margin-top:10px"><button onclick="kgOutAsk()">로그아웃</button><button class="x" style="background:var(--p-wipe);color:var(--warn);border-radius:13px;padding:13px 15px;font-size:14px" onclick="kgDelAsk()">계정 삭제</button></div><p class="small" id="kgm">'+esc(kgM)+'</p>'}
+function kgUiBusy(){if($('sh').classList.contains('on'))return true;const a=document.activeElement;return !!a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)}
+
+/* 물어보는 창 (취소하면 -1) */
+function kgAsk(t,msg,bs){return new Promise(res=>{kgAskRes=res;$('toast').classList.remove('on');sh(t,'<p style="font-size:15px;color:var(--ink);margin:6px 0 12px;line-height:1.6">'+msg+'</p>'+bs.map((b,i)=>'<button class="btn" style="margin-top:8px'+(b[1]||'')+'" onclick="kgPick('+i+')">'+b[0]+'</button>').join(''))})}
+function kgPick(i){const r=kgAskRes;kgAskRes=null;cs();if(r)r(i)}
+const KRED=';background:var(--p-wipe);color:var(--warn)',KGREY=';background:var(--p-grey)';
+
+/* 로그인 ① 구글 창 열기 */
+async function kgLogin(){
+  if(kgLogBusy)return;
+  if(!SRV()){kgMsg('서버 주소가 설정되지 않아 로그인을 쓸 수 없어요');return}
+  kgLogBusy=1;kgMsg('구글 로그인 창을 여는 중이에요…');
+  try{
+    const v=kgRand(32),ch=await kgSha(v),nat=kgNative(),b={ch};if(!nat)b.web=location.origin+location.pathname;
+    const r=await kgReq('POST','/auth/begin',JSON.stringify(b),{noauth:1});
+    if(r.s===503){kgMsg(KGE.conf);return}
+    if(r.s===429){kgMsg('잠시 뒤에 다시 시도해 주세요');return}
+    if(r.s===404){kgMsg('서버가 예전 버전이에요. 안내서대로 새 worker.js 를 붙여 넣어 주세요');return}
+    if(!(r.s===200&&r.j&&typeof r.j.go==='string'&&r.j.go.indexOf(SRV()+'/auth/go?t=')===0)){kgMsg('서버에 연결하지 못했어요. 인터넷을 확인해 주세요');return}
+    lsSet('kg_pend',{v,t:Date.now()});
+    kgMsg(nat?'열린 구글 창에서 로그인을 마치면 자동으로 돌아와요':'구글 로그인 화면으로 이동해요…');
+    const B=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.Browser;
+    if(nat&&B&&B.open)await B.open({url:r.j.go});else location.href=r.j.go;
+  }catch(e){kgMsg('로그인을 시작하지 못했어요. 다시 시도해 주세요')}
+  finally{kgLogBusy=0}}
+
+/* 로그인 ② 앱으로 돌아온 열쇠를 로그인 열쇠로 바꾸기 */
+function kgUrl(u){u=String(u||'');if(u.indexOf('kkotgil:')!==0)return;
+  const c=/[?&]code=([A-Za-z0-9_-]{20,64})/.exec(u),e=/[?&]err=([a-z]+)/.exec(u);
+  if(c)kgFinish(c[1]);else kgMsg(KGE[e&&e[1]]||KGE.fail)}
+async function kgFinish(code){
+  const p=ld('kg_pend',null);
+  if(!p||typeof p.v!=='string'||Date.now()-p.t>15*6e4){kgMsg(KGE.expired);return}
+  kgMsg('확인하는 중이에요…');
+  const r=await kgReq('POST','/auth/exchange',JSON.stringify({code,v:p.v}),{noauth:1});
+  if(r.s===200&&r.j&&typeof r.j.token==='string'&&/^[A-Za-z0-9_-]{20,100}$/.test(r.j.token)){
+    lsSet('kg_pend',null);lsSet('kg_tok',r.j.token);lsSet('kg_user',{sub:String(r.j.sub||''),email:String(r.j.email||''),name:String(r.j.name||'')});
+    kgM='';kgShow(false);kgUi();kgSync('login')}
+  else if(r.s===404)kgMsg('로그인 확인에 실패했어요. 처음부터 다시 해 주세요');
+  else if(r.s===429)kgMsg('잠시 뒤에 다시 시도해 주세요');
+  else kgMsg('서버에 연결하지 못했어요. 인터넷을 확인해 주세요')}
+
+/* 로그아웃 · 계정 삭제 · 모두 지우기 */
+function kgOut(exp){
+  if(!exp)kgReq('POST','/auth/logout','',{ms:6000});
+  lsSet('kg_tok',null);lsSet('kg_user',null);clearTimeout(kgT);kgStat='';kgM='';
+  if(exp){kgShow(true);toast('로그인이 풀렸어요. 다시 로그인해 주세요')}
+  kgUi()}
+function kgOutAsk(){kgAsk('로그아웃','로그아웃해도 계정에 저장된 기록은 그대로 남아 있어요. 이 폰의 기록은 어떻게 할까요?',[['이 폰의 기록은 그대로 두기',''],['이 폰의 기록도 지우기'+'',KRED],['취소',KGREY]]).then(c=>{if(c>=0&&c<2)kgBye(c===1)})}
+async function kgWaitIdle(){for(let i=0;i<100&&kgBusy;i++)await new Promise(r=>setTimeout(r,200))}
+async function kgBye(wipe){
+  if(wipe&&lsGet('kg_dirty')){toast('계정에 먼저 저장하는 중…');await kgWaitIdle();await kgSync('bye');await kgWaitIdle();
+    if(lsGet('kg_dirty')){toast('아직 계정에 저장되지 않은 기록이 있어서 지우지 않았어요. 인터넷을 확인해 주세요');return}}
+  kgOut(0);
+  if(wipe){try{KEYS.forEach(k=>localStorage.removeItem(k))}catch(e){}['kg_rev','kg_sub','kg_dirty','kg_last'].forEach(k=>lsSet(k,null));location.reload();return}
+  toast('로그아웃했어요')}
+function kgDelAsk(){kgAsk('계정 삭제','계정과 서버에 저장된 기록을 모두 지워요. <b>이 폰의 기록은 그대로 남아요.</b> 다른 폰에서는 로그아웃 상태가 되고, 되돌릴 수 없어요.',[['계정 삭제',KRED],['취소',KGREY]]).then(c=>{if(c===0)kgDel()})}
+async function kgDel(){
+  const r=await kgReq('POST','/account/delete','');
+  if(r.s===200||r.s===401){['kg_tok','kg_user','kg_sub','kg_rev','kg_last'].forEach(k=>lsSet(k,null));clearTimeout(kgT);kgStat='';kgM='';kgUi();toast('계정을 삭제했어요. 이 폰의 기록은 그대로예요')}
+  else toast('삭제하지 못했어요. 인터넷을 확인해 주세요')}
+function kgWipeAsk(){kgAsk('모든 기록 삭제','로그인 중이라 <b>계정에 저장된 기록도 함께 지워져요.</b> 다른 폰에서도 사라지고, 되돌릴 수 없어요.',[['모두 지우기',KRED],['취소',KGREY]]).then(c=>{if(c===0){try{KEYS.forEach(k=>localStorage.removeItem(k))}catch(e){}location.reload()}})}
+
+/* 기록 합치기 */
+function kgDefDog(d){return d.name==='새 아이'&&d.note===DEF_NOTE&&!d.photo&&!d.rn&&!d.ct&&!d.cd&&!d.nu&&(!d.age||d.age==='약 3개월')&&(!d.sex||d.sex==='남아')}
+/* 처음 설치한 그대로(아직 아무것도 안 적은) 기록인지 */
+function kgPristine(o){const g=k=>o[k]||[];return g('imbonote_dogs').length===1&&kgDefDog(o.imbonote_dogs[0])&&!KLK.some(k=>g(k).length)&&!Object.keys(o.imbonote_taken||{}).length}
+/* L: 이 폰 기록, R: 계정 기록. 서로 다른 곳에서 시작된 기록(indep)이면 번호가 겹치는 것을 다른 것으로 보고 새 번호를 줘요 */
+function kgMerge(L,R,indep){
+  if(kgPristine(R))return L;if(kgPristine(L))return R;
+  const cp=o=>JSON.parse(JSON.stringify(o)),A=cp(L),B=cp(R);let n=Date.now();const nid=()=>++n;
+  if(indep){
+    const rd=new Map(B.imbonote_dogs.map(d=>[d.id,d])),dm={},mm={};
+    A.imbonote_dogs.forEach(d=>{const r=rd.get(d.id);if(r&&!(d.sid&&d.sid===r.sid)){const o=d.id;d.id=nid();dm[o]=d.id}});
+    KLK.forEach(k=>A[k].forEach(x=>{if(x.dog in dm)x.dog=dm[x.dog]}));
+    KLK.forEach(k=>{const rb=new Map(B[k].map(x=>[x.id,x]));A[k].forEach(x=>{const r=rb.get(x.id);if(r&&JSON.stringify(r)!==JSON.stringify(x)){const o=x.id;x.id=nid();if(k==='imbonote_meds')mm[o]=x.id}})});
+    const tk={};Object.keys(A.imbonote_taken||{}).forEach(key=>{const i=key.indexOf('_'),m=key.slice(0,i);tk[(m in mm)?mm[m]+key.slice(i):key]=A.imbonote_taken[key]});A.imbonote_taken=tk;
+    const used=new Set();KLK.forEach(k=>A[k].forEach(x=>used.add(x.dog)));
+    if(B.imbonote_dogs.length)A.imbonote_dogs=A.imbonote_dogs.filter(d=>!(kgDefDog(d)&&!used.has(d.id)))}
+  const dm2=new Map(A.imbonote_dogs.map(d=>[d.id,d])),D2=A.imbonote_dogs.slice();
+  B.imbonote_dogs.forEach(r=>{const l=dm2.get(r.id);if(!l)D2.push(r);else if((r.u||0)>(l.u||0))D2[D2.indexOf(l)]=r});
+  const ids=new Set(D2.map(d=>d.id)),out={imbonote_dogs:D2};
+  KLK.forEach(k=>{const have=new Set(A[k].map(x=>x.id));out[k]=A[k].concat(B[k].filter(x=>!have.has(x.id))).filter(x=>x.dog==null||ids.has(x.dog))});
+  out.imbonote_taken=Object.assign({},B.imbonote_taken||{},A.imbonote_taken||{});
+  return out}
+
+/* 서버에서 받은 기록 읽기 (모양이 이상하면 쓰지 않고 멈춰요) */
+function kgParse(t){
+  try{const o=JSON.parse(t);
+    if(o&&typeof o.v==='number'&&o.v>1){kgStat='new';return null}
+    if(o&&o.v===1&&okBk(o.d)){const d=o.d;KLK.forEach(k=>{if(!Array.isArray(d[k]))d[k]=[]});if(!d.imbonote_taken)d.imbonote_taken={};return d}}catch(e){}
+  kgStat='bad';return null}
+/* 이 폰의 기록을 받은 기록으로 바꾸기 (실패하면 원래대로 돌려놔요) */
+function kgPut(d){
+  const K=['imbonote_dogs','imbonote_logs','imbonote_weights','imbonote_vacc','imbonote_meds','imbonote_taken'],prev=K.map(k=>{try{return localStorage.getItem(k)}catch(e){return null}});
+  try{K.forEach(k=>localStorage.setItem(k,JSON.stringify(d[k])))}
+  catch(e){K.forEach((k,i)=>{try{if(prev[i]==null)localStorage.removeItem(k);else localStorage.setItem(k,prev[i])}catch(x){}});return false}
+  dogs=d.imbonote_dogs;logs=d.imbonote_logs;ws=d.imbonote_weights;vs=d.imbonote_vacc;meds=d.imbonote_meds;taken=d.imbonote_taken;
+  if(!dogs.some(x=>x.id===cur))cur=dogs[0].id;
+  [logs,ws,vs].forEach(a=>a.forEach(x=>{if(!x.dog)x.dog=dogs[0].id}));logs.forEach((x,i)=>{if(!x.id)x.id=Date.now()+i});
+  lsSet('imbonote_cur',cur);all();if(window.__kkotgilResched)window.__kkotgilResched();return true}
+
+/* 이 폰과 계정을 처음 이어줄 때 (이 계정으로 쓴 적 없는 폰) */
+async function kgLink(u){
+  const g=await kgReq('GET','/sync');
+  if(g.s===401){kgOut(1);return false}
+  if(g.s!==200&&g.s!==204){kgStat='off';return false}
+  let R=null;if(g.s===200){R=kgParse(g.text);if(!R)return false}
+  const rv=g.s===200?g.rev:0,L=kgCopy(),link=()=>lsSet('kg_sub',u.sub);
+  if(!R||kgPristine(R)){lsSet('kg_rev',rv);lsSet('kg_dirty','1');link();toast('로그인했어요. 이 폰의 기록을 계정에 저장해요');return true}
+  const take=()=>{if(!kgPut(R)){kgStat='full';return false}lsSet('kg_rev',rv);lsSet('kg_dirty',null);link();kgStat='';lsSet('kg_last',Date.now());return true};
+  if(kgPristine(L)){if(!take())return false;toast('계정에 저장된 기록을 불러왔어요');return true}
+  const c=await kgAsk('기록을 어떻게 할까요?','이 폰에 있는 기록과, 이 계정(<b>'+esc(u.email||u.name||'')+'</b>)에 저장된 기록이 서로 달라요.',[['둘 다 합치기 (추천)',''],['계정 기록으로 바꾸기 (이 폰 기록은 지워져요)',KRED],['취소 (로그인하지 않기)',KGREY]]);
+  if(c===0){const m=kgMerge(L,R,true);if(!kgPut(m)){kgStat='full';return false}lsSet('kg_rev',rv);lsSet('kg_dirty','1');link();toast('두 기록을 합쳤어요. 계정에 저장해요');return true}
+  if(c===1){const s=await kgAsk('정말 바꿀까요?','이 폰의 기록이 모두 지워지고, 계정에 저장된 기록으로 바뀌어요. 되돌릴 수 없어요.',[['바꾸기',KRED],['취소',KGREY]]);
+    if(s===0){if(!take())return false;toast('계정에 저장된 기록으로 바꿨어요');return true}}
+  kgOut(0);toast('로그인하지 않았어요. 이 폰의 기록은 그대로예요');return false}
+
+/* 맞추기: 바뀐 게 있으면 올리고, 없으면 서버에 새 기록이 있는지 확인해요 */
+async function kgSync(why){
+  const u=kgUser();if(!kgTok()||!u)return;
+  if(kgBusy){kgAgain=1;return}
+  kgBusy=1;kgStat='sync';kgUi();
+  try{
+    if(lsGet('kg_sub')!==u.sub){if(!await kgLink(u))return}else if(why==='login')toast('로그인했어요');
+    for(let i=0;i<6;i++){
+      const seq=kgSeq,dirty=!!lsGet('kg_dirty'),base=kgRev();
+      if(!dirty){
+        const pk=await kgReq('GET','/sync?peek=1');
+        if(pk.s===401){kgOut(1);return}
+        if(!(pk.s===200&&pk.j&&pk.j.rev>=0)){kgStat='off';return}
+        if(pk.j.rev===base){kgStat='';lsSet('kg_last',Date.now());return}
+        const g=await kgReq('GET','/sync');
+        if(g.s===401){kgOut(1);return}
+        if(seq!==kgSeq||lsGet('kg_dirty'))continue;
+        if(g.s===204){lsSet('kg_rev',0);lsSet('kg_dirty','1');continue}
+        if(g.s!==200){kgStat='off';return}
+        const d=kgParse(g.text);if(!d)return;
+        if(kgUiBusy()){kgStat='';setTimeout(()=>kgSync('later'),8000);return}
+        if(!kgPut(d)){kgStat='full';return}
+        lsSet('kg_rev',g.rev);kgStat='';lsSet('kg_last',Date.now());return}
+      const body=JSON.stringify({v:1,d:kgGet()});
+      if(new TextEncoder().encode(body).length>1500000){kgStat='big';return}
+      const p=await kgReq('PUT','/sync?base='+base,body);
+      if(p.s===401){kgOut(1);return}
+      if(p.s===200&&p.j&&p.j.rev>0){lsSet('kg_rev',p.j.rev);if(seq===kgSeq)lsSet('kg_dirty',null);else kgAgain=1;kgStat='';lsSet('kg_last',Date.now());return}
+      if(p.s===409){
+        if(!(p.rev>0)||!p.text){lsSet('kg_rev',0);continue}
+        const d=kgParse(p.text);if(!d)return;
+        if(kgUiBusy()){kgStat='';setTimeout(()=>kgSync('later'),8000);return}
+        const m=kgMerge(kgCopy(),d,false);
+        if(!kgPut(m)){kgStat='full';return}
+        lsSet('kg_rev',p.rev);lsSet('kg_dirty','1');continue}
+      kgStat=p.s===413?'big':'off';return}
+    kgStat='off'}
+  catch(e){kgStat='off'}
+  finally{kgBusy=0;kgUi();if(kgAgain){kgAgain=0;kgSoon()}}}
+function kgSoon(){clearTimeout(kgT);if(kgTok())kgT=setTimeout(()=>kgSync('edit'),3000)}
+async function kgNow(){toast('맞추는 중…');await kgWaitIdle();await kgSync('now');await kgWaitIdle();toast(kgStat?kgStatTxt():'모두 저장됐어요')}
+
+/* 앱을 켤 때 한 번 */
+function kgInit(){
+  kgReady=1;
+  const im=document.querySelector('header img'),lg=$('lgimg');if(im&&lg)lg.src=im.src;
+  const A=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.App;
+  if(A&&A.addListener){A.addListener('appUrlOpen',e=>kgUrl(e&&e.url));A.addListener('appStateChange',s=>{if(s&&s.isActive)kgSync('resume')});if(A.getLaunchUrl)A.getLaunchUrl().then(r=>{if(r&&r.url)kgUrl(r.url)},()=>{})}
+  const q=location.search,wc=/[?&]kgcode=([A-Za-z0-9_-]{20,64})/.exec(q),we=/[?&]kgerr=([a-z]+)/.exec(q);
+  if(wc||we){try{history.replaceState(null,'',location.pathname+location.hash)}catch(e){}if(wc)kgFinish(wc[1]);else kgMsg(KGE[we[1]]||KGE.fail)}
+  kgShow(!kgTok()&&!!SRV());kgUi();
+  if(kgTok())kgSync('start');
+  setInterval(()=>{if(!document.hidden&&kgTok())kgSync('tick')},90000);
+  document.addEventListener('visibilitychange',()=>{if(!kgTok())return;if(document.hidden){if(lsGet('kg_dirty'))kgSync('hide')}else kgSync('resume')});
+  addEventListener('online',()=>kgSync('online'))}
+all();shareUi();kgInit();setInterval(()=>{try{mdraw();sum()}catch(e){}},60000);
 </script><script src="native.js"></script></body></html>

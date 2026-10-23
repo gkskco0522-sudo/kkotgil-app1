@@ -87,4 +87,6 @@
   document.addEventListener('visibilitychange', function () { if (!document.hidden) soon(false); });
   soon(false);
   window.__kkotgilBuild = build;
+  /* 계정에서 새 기록을 받아왔을 때, 알림 예약을 조용히(안내 문구 없이) 다시 맞춰요 */
+  window.__kkotgilResched = function () { soon(false); };
 })();
