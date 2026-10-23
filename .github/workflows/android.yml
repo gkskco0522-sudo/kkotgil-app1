@@ -20,7 +20,9 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install
-        run: npm install
+        run: |
+          npm install
+          npm install @capacitor/app@^8 @capacitor/browser@^8
       - name: Add Android project
         run: npx cap add android
       - name: App icon
@@ -60,6 +62,31 @@ jobs:
         run: |
           sed -i 's#</manifest>#    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />\n    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />\n</manifest>#' android/app/src/main/AndroidManifest.xml
           grep -n "EXACT_ALARM" android/app/src/main/AndroidManifest.xml
+      - name: Allow return from Google sign-in
+        run: |
+          python3 - <<'PY'
+          p = 'android/app/src/main/AndroidManifest.xml'
+          s = open(p, encoding='utf-8').read()
+          if 'android:scheme="kkotgil"' in s:
+              print('already added')
+          else:
+              k = s.find('MainActivity')
+              j = s.find('</activity>', k) if k >= 0 else -1
+              if j < 0:
+                  raise SystemExit('AndroidManifest.xml 에서 MainActivity 를 찾지 못했어요')
+              link = (
+                  '            <intent-filter>\n'
+                  '                <action android:name="android.intent.action.VIEW" />\n'
+                  '                <category android:name="android.intent.category.DEFAULT" />\n'
+                  '                <category android:name="android.intent.category.BROWSABLE" />\n'
+                  '                <data android:scheme="kkotgil" android:host="auth" />\n'
+                  '            </intent-filter>\n'
+                  '        '
+              )
+              s = s[:j].rstrip(' ') + link + s[j:]
+              open(p, 'w', encoding='utf-8').write(s)
+          PY
+          grep -n -B3 -A3 'android:scheme="kkotgil"' android/app/src/main/AndroidManifest.xml
       - name: Build APK
         working-directory: android
         run: |
