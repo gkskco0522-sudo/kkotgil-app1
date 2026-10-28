@@ -2,7 +2,7 @@
 <script>window.onerror=function(m,u,l,c){var e=document.getElementById("err");if(e){e.style.display="block";e.textContent="오류: "+m+" ("+l+":"+c+")"}};</script>
 <script src="config.js"></script>
 <script>try{if(window.KG_SERVER&&!localStorage.getItem("kg_tok"))document.documentElement.classList.add("lgon")}catch(e){}</script>
-<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Jua&family=Single+Day&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#FBFAFF;--app:#FBFAFF;--card:#FFFFFF;--tile:#FFFFFF;--ink:#1F2A5C;--sub:#4A5688;--mute:#66719F;--line:#E4E8FA;--btn:#CFE0FF;--btnink:#1F2A5C;--bar:#4558C8;--track:#E4E8FA;--warn:#D6455D;--soon:#B8741A;--in:#FFFFFF;--inbd:#D5DBF5;--tb:#E4E8FA;--av:#EEF1FF;color-scheme:light;--hero:#CFE0FF;--hi:#1F2A5C;--hs:#3D4A7E;--hc:rgba(255,255,255,.65);--p-peach:#FFD6C9;--p-sky:#CDEBFF;--p-lime:#E3F5C8;--p-rose:#FFD3E6;--p-pink:#FFD3E6;--p-sun:#FFF0B3;--p-mint:#C9F2E6;--p-lav:#E2D9FF;--p-lav2:#EEF1FF;--p-lav3:#EDE6FF;--p-grey:#EEF0F8;--p-blush:#EEF1FF;--p-cream:#FFF6D6;--p-wipe:#FFE0E6;--p-skybd:#8FB8E8;--p-pillink:#1F2A5C;--rmx:rgba(255,255,255,.7);
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -60,6 +60,10 @@ summary{cursor:pointer;list-style:none;display:flex;justify-content:space-betwee
 .lgb h1{font-size:32px;margin:6px 0 4px}.lgb .lgs{font-size:15px;color:var(--sub);margin:0 0 30px}.lgx{margin:14px 4px 6px;line-height:1.6}
 .lgskip{background:none;color:var(--mute);font-weight:400;font-size:14px;text-decoration:underline;margin-top:6px}
 html[data-theme="dark"] .lgb img{background:#fff;border-radius:16px;padding:6px 10px;box-sizing:border-box}
+#prcv{width:100%;height:auto;display:block;border-radius:12px;background:var(--p-grey)}
+.prw{background:var(--p-cream);border-left:5px solid var(--soon);border-radius:14px;padding:10px 12px;margin:10px 0;font-size:13px;line-height:1.5;color:var(--ink)}
+.prw button{display:inline;min-height:0;padding:2px 8px;margin-left:4px;background:none;color:var(--bar);font-size:13px;font-weight:700;text-decoration:underline}
+.dc:disabled{opacity:.55;cursor:default}
 </style><link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#CFE0FF">
@@ -90,8 +94,23 @@ html[data-theme="dark"] .lgb img{background:#fff;border-radius:16px;padding:6px 
 <details class="card"><summary><b>알람 소리</b> <span class="small" id="snow"></span></summary><p>안드로이드 앱에서 약·접종 알림이 울릴 때 나는 소리예요. 웹에서는 미리듣기만 돼요.</p><div id="sbox2" style="margin-top:10px"></div></details>
 <div class="card" style="background:var(--p-lav2)"><b>백업 · 복원</b><p>기록은 이 기기에 저장돼요. (구글 계정으로 로그인하면 내 계정에도 저장돼요.) 백업 내용을 복사해 메모 등에 보관해 두면, 나중에 아래 칸에 붙여넣어 복원할 수 있어요.</p><textarea id="bkt" rows="4" placeholder="백업 내용이 여기에 나타나요. 복원할 때는 여기에 붙여넣으세요."></textarea><div class="row2"><button onclick="bk()">백업 내용 만들기</button><button onclick="rs()">이 내용으로 복원</button></div></div>
 <div class="card"><b>데이터 삭제</b><p>모든 아이와 기록, 체중, 접종, 약 정보를 지워요. 되돌릴 수 없어요.<span id="wipenote"></span></p><button id="wipe" class="x" style="background:var(--p-wipe);color:var(--warn);border-radius:12px;padding:12px 14px;font-size:14px" onclick="wipeAll()">모든 기록 삭제</button></div>
-<div class="card"><b>앱 정보</b><p>너의 꽃길 · 아이들의 기록장<br>글씨체: 고운바탕<br>앱 버전: 2026.10.23 (계정 로그인)</p></div></section>
-</main><nav><button data-p="home" class="sel" onclick="go('home')">홈</button><button data-p="cal" onclick="go('cal')">달력</button><button data-p="health" onclick="go('health')">건강</button><button data-p="med" onclick="go('med')">약</button><button data-p="pet" onclick="go('pet')">아이</button></nav></div>
+<div class="card"><b>앱 정보</b><p>너의 꽃길 · 아이들의 기록장<br>글씨체: 고운바탕<br>앱 버전: 2026.10.29 (홍보 카드)</p></div></section>
+<section id="promo" class="page"><h2>입양 홍보카드</h2>
+<p>임보 기록으로 입양 홍보 그림을 만들어요. 전화번호·동물등록번호·집 주소는 카드에 넣지 않아요.</p>
+<div id="pdogs" class="strip"></div>
+<div class="seg" role="group" aria-label="카드 모양"><button type="button" id="pst_cork" onclick="prStyle('cork')">코르크보드</button><button type="button" id="pst_pola" onclick="prStyle('pola')">폴라로이드</button></div>
+<div class="card" style="padding:10px"><canvas id="prcv" width="1080" height="1350" role="img" aria-label="입양 홍보카드 미리보기"></canvas></div>
+<div id="prwarn"></div>
+<div class="card"><label for="prlink"><b style="font-size:15px;color:var(--ink)">오픈카톡 링크</b></label>
+<input id="prlink" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="120" placeholder="https://open.kakao.com/o/..." oninput="prLink()">
+<p class="small" style="margin:0 0 14px">카드 아래 "입양 문의" 줄에 글자로 들어가요. 폰에서 공유하면 링크가 글자로도 함께 붙어요. 비워 두면 그 줄이 빠져요.</p>
+<b style="font-size:15px">카드에 넣을 기록</b>
+<div id="prchips" class="chips"></div>
+<p class="small">아이 정보·체중·접종·병원 기록에서 자동으로 가져와요. 내용을 고치려면 해당 탭에서 바꿔 주세요. 성격·병원 메모는 적은 그대로 들어가니, 연락처 같은 개인정보가 섞여 있지 않은지 확인해 주세요.</p></div>
+<button class="btn" onclick="prSave()">이미지로 저장 · 공유</button>
+<button class="btn" style="margin-top:8px;background:var(--p-lav2)" onclick="prBig()">크게 보기</button>
+</section>
+</main><nav><button data-p="home" class="sel" onclick="go('home')">홈</button><button data-p="cal" onclick="go('cal')">달력</button><button data-p="health" onclick="go('health')">건강</button><button data-p="med" onclick="go('med')">약</button><button data-p="pet" onclick="go('pet')">아이</button><button data-p="promo" onclick="go('promo')">홍보</button></nav></div>
 <div class="sheet" id="sh"><div class="sbg" onclick="cs()"></div><div class="sbox" id="sbox"></div></div><div class="toast" id="toast"></div>
 <div id="lg" role="dialog" aria-modal="true" aria-label="로그인"><div class="lgb"><img id="lgimg" alt=""><h1>너의 꽃길</h1><p class="lgs">아이들의 기록장</p><button class="btn" id="lgbtn" onclick="kgLogin()">Google 계정으로 시작하기</button><p class="small" id="lgm" style="min-height:18px;margin-top:10px"></p><p class="small lgx">처음이면 계정이 자동으로 만들어져요.<br>다른 폰에서 같은 계정으로 로그인하면<br>지금까지의 기록이 그대로 옮겨져요.</p><button class="lgskip" onclick="kgSkip()">나중에 하기</button></div></div>
 <script>
@@ -285,7 +304,7 @@ const TC={식사:'var(--p-peach)',물:'var(--p-sun)',배변:'var(--p-mint)',약:
 const pill=t=>'<span class="pill" style="background:'+(TC[t]||'var(--p-grey)')+'">'+esc(t)+'</span>';
 let rt='식사';
 logs.forEach((x,i)=>{if(!x.id)x.id=Date.now()+i});
-function go(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));$(id).classList.add('on');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('sel',b.dataset.p===id));$('menu').classList.toggle('on',id==='set');document.body.dataset.pg=id;scrollTo(0,0);if(id==='set')kgUi()}
+function go(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));$(id).classList.add('on');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('sel',b.dataset.p===id));$('menu').classList.toggle('on',id==='set');document.body.dataset.pg=id;scrollTo(0,0);if(id==='set')kgUi();if(id==='promo'&&window.prShow)prShow()}
 function sh(t,b){$('sbox').innerHTML='<div class="row" style="border:0;padding:0 0 10px"><b style="font-size:18px">'+t+'</b><button class="ib" onclick="cs()" aria-label="닫기">닫기</button></div>'+b;$('sh').classList.add('on')}
 function cs(){$('sh').classList.remove('on');if(kgAskRes){const r=kgAskRes;kgAskRes=null;r(-1)}}
 function rec(t,d){rt=t||'식사';sh('기록 추가','<div class="chips" id="rtc"></div><div id="amtbox"><label class="l">먹은 양 (g)</label><div class="chips" id="amc"></div><input type="number" id="amt" inputmode="numeric" min="0" placeholder="직접 입력"></div><label class="l" for="memo">메모 (선택)</label><input id="memo" maxlength="100" placeholder="예: 산책 30분, 사료 한 컵"><label class="l" for="rd">날짜</label><input type="date" id="rd" value="'+(d||today())+'"><button class="btn" onclick="saveRec()">저장</button>');rtd()}
@@ -300,7 +319,7 @@ function hseg(k){$('hw').style.display=k==='w'?'block':'none';$('hv').style.disp
 function wsheet(){const L=mine(ws).slice().sort((a,b)=>b.d.localeCompare(a.d))[0];sh('체중 기록','<div class="row2"><div><label class="l" for="wd">날짜</label><input type="date" id="wd" value="'+today()+'"></div><div><label class="l" for="wk">체중 (kg)</label><input type="number" id="wk" step="0.01" min="0" inputmode="decimal" value="'+(L?L.k:'')+'" placeholder="예: 3.4"></div></div><button class="btn" onclick="addW()">저장</button>')}
 function vsheet(){sh('접종 기록','<label class="l" for="vt">종류</label><select id="vt" onchange="vtg()" oninput="vtg()">'+VT.map(v=>'<option>'+v+'</option>').join('')+'</select><div id="vrbox" style="display:none"><label class="l" for="vr">몇 차 접종인가요?</label><select id="vr"><option value="">선택 안 함</option><option>1차</option><option>2차</option><option>3차</option><option>4차</option><option>5차</option><option>추가접종</option></select></div><div id="vxbox" style="display:none"><label class="l" for="vx">어떤 구충을 했나요?</label><input id="vx" maxlength="40" placeholder="예: 내·외부 구충"></div><div class="row2"><div><label class="l" for="vd">접종한 날</label><input type="date" id="vd" value="'+today()+'"></div><div><label class="l" for="vn">다음 예정일</label><input type="date" id="vn"></div></div><button class="btn" onclick="addV()">저장</button>');vtg()}
 function msheet(){mwd=[];sh('약 추가','<label class="l" for="mn">약 이름</label><input id="mn" maxlength="30" placeholder="예: 피부약"><label class="l" for="md">용량·메모 (선택)</label><input id="md" maxlength="30" placeholder="예: 1알, 식후"><label class="l" for="mh">복용 시간</label><input type="time" id="mh" value="08:00"><label class="l" for="mrp">반복</label><select id="mrp" onchange="mtg()" oninput="mtg()"><option value="d">매일</option><option value="w">요일 선택 (매주)</option><option value="m">매월 특정 날짜</option><option value="o">날짜 하나만 (한 번)</option></select><div id="mwbox" style="display:none"><div id="mwchips" class="chips"></div><div class="chips"><button type="button" class="dc" onclick="mwset([1,2,3,4,5])">평일</button><button type="button" class="dc" onclick="mwset([0,6])">주말</button><button type="button" class="dc" onclick="mwset([0,1,2,3,4,5,6])">매일</button></div></div><div id="mmbox" style="display:none"><label class="l" for="mmd">매월 며칠에 먹나요?</label><input type="number" id="mmd" min="1" max="31" inputmode="numeric" placeholder="예: 15"></div><div id="mobox" style="display:none"><label class="l" for="mod">날짜</label><input type="date" id="mod"></div><button class="btn" onclick="addM()">추가</button>');mtg()}
-function all(){drawDogs();head();render();sum();drawW();drawV();drawC();fillPet();mdraw();drawColors();fillSpet()}
+function all(){drawDogs();head();render();sum();drawW();drawV();drawC();fillPet();mdraw();drawColors();fillSpet();if(window.prAll)prAll()}
 $('tiles').innerHTML=TL.map(t=>'<button class="tile" style="background:var(--p-'+t[1]+')" onclick="rec(\''+t[0]+'\')">'+t[0]+'</button>').join('');
 ath();const SNDS=[['snd_bell','맑은 종소리','또렷하고 깨끗한 종소리'],['snd_musicbox','오르골','잔잔하게 퍼지는 오르골'],['snd_chime','부드러운 차임','세 음이 천천히 내려와요'],['snd_drop','물방울','통통 튀는 물방울'],['snd_marimba','마림바','따뜻하게 올라가는 음'],['snd_bird','아침 새소리','짹짹 지저귀는 소리'],['snd_piano','피아노','맑은 피아노 화음'],['snd_harp','하프','반짝이며 올라가는 하프'],['snd_xylo','실로폰','통통 튀는 실로폰'],['snd_pop','뿅뿅','귀여운 뿅뿅 소리']];
 let snd=ld('imbonote_sound','snd_bell'),aud=null;
@@ -558,4 +577,367 @@ function kgInit(){
   document.addEventListener('visibilitychange',()=>{if(!kgTok())return;if(document.hidden){if(lsGet('kg_dirty'))kgSync('hide')}else kgSync('resume')});
   addEventListener('online',()=>kgSync('online'))}
 all();shareUi();kgInit();setInterval(()=>{try{mdraw();sum()}catch(e){}},60000);
+</script>
+<script>
+/* ───────── 홍보 탭 · 입양 홍보카드 ─────────
+   임보 기록(아이 정보 · 체중 · 접종 · 병원 기록)으로 1080×1350 그림 한 장을 그려요.
+   전화번호 · 동물등록번호 · 집 주소는 카드에 넣지 않아요. 직접 적는 것은 오픈카톡 링크뿐이에요.
+   카드 모양 · 링크 · 넣을 기록은 아이마다 d.pc 에 저장돼요 (로그인하면 계정에도 같이 저장돼요). */
+(function(){
+const K=2,W=540,H=675,NAVY='#1F2A5C',BLUE='#4558C8',SUB='#4A5688';
+const FJ='Jua,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif',
+  FG='Gaegu,Jua,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif',
+  FS='"Single Day",Jua,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
+const PRK=[['w','몸무게'],['v','접종'],['r','등록·중성화'],['h','병원'],['n','성격']];
+const FOOT='너의 꽃길 · 기록으로 만든 입양 카드';
+const STAT='가족을 찾아요! 기록 기준 성격 몸무게 건강 접종 등록 중성화 병원 입양 문의 오픈채팅 입양 문의는 오픈채팅으로 다음 완료 장착 동물등록 진료를 받았어요 0123456789 kg '+FOOT;
+let seq=0,tmr=0,blob=null,pend=null,phC={u:'',i:null},lgC=null,bigU='',shown=false;
+
+/* ── 아이마다 저장하는 설정 ── */
+function cfg(d){const c=d.pc&&typeof d.pc==='object'?d.pc:{};return{s:c.s==='pola'?'pola':'cork',oc:typeof c.oc==='string'?c.oc.slice(0,120):'',off:Array.isArray(c.off)?c.off.filter(k=>PRK.some(p=>p[0]===k)):[]}}
+function setCfg(d,p){d.pc=Object.assign({},cfg(d),p);d.u=Date.now();saveD()}
+
+/* ── 기록 → 카드에 들어갈 글 ── */
+const mdk=s=>{const m=/^(\d{4})-(\d\d)-(\d\d)/.exec(s||'');return m?(+m[2])+'월 '+(+m[3])+'일':''};
+const nkg=k=>String(Math.round(k*100)/100);
+const cl=s=>String(s==null?'':s).replace(/\s+/g,' ').trim();
+function model(d){
+  const c=cfg(d),off=new Set(c.off),t=today(),has={};
+  const v=vs.filter(x=>x.dog===d.id),w=ws.filter(x=>x.dog===d.id&&x.k>0&&x.d),l=logs.filter(x=>x.dog===d.id);
+  const by=(k,r)=>(a,b)=>r*String(a[k]||'').localeCompare(String(b[k]||''));
+  const M={name:cl(d.name)||'이름 없음',sex:cl(d.sex),age:cl(d.age),style:c.s,has:has};
+  M.basic=[M.sex,M.age].filter(Boolean).join(' · ');
+  /* 몸무게: 가장 최근 기록 */
+  const wl=w.slice().sort(by('d',-1))[0];
+  has.w=!!wl;M.weight=wl&&!off.has('w')?{t:nkg(wl.k)+'kg',d:mdk(wl.d)}:null;
+  /* 접종: 종합백신 최근 1건 + 다른 종류 최근 2건 + 다가오는 예정일 */
+  const given=v.filter(x=>x.d&&x.d<=t).sort(by('d',-1)),main=given.find(x=>x.t==='종합백신'),seen={},ex=[];
+  given.forEach(x=>{if(x.t!=='종합백신'&&!seen[x.t]&&ex.length<2){seen[x.t]=1;ex.push({a:x.t==='기타'?(cl(x.x)||'기타 접종'):x.t,b:'완료'})}});
+  const nx=v.filter(x=>x.n&&x.n>=t).sort(by('n',1))[0];
+  let next=null;
+  if(nx){const m=/^(\d)차$/.exec(nx.x||'');next={a:nx.t==='종합백신'?(m&&+m[1]<5?(+m[1]+1)+'차':'종합백신'):nx.t==='기타'?(cl(nx.x)||'접종'):nx.t,d:mdk(nx.n)}}
+  const VC={main:main?{a:'종합백신',b:(cl(main.x)?cl(main.x)+' ':'')+'완료',d:mdk(main.d)}:null,ex:ex,next:next};
+  has.v=!!(VC.main||ex.length||next);M.vacc=has.v&&!off.has('v')?VC:null;
+  /* 등록 · 중성화 (등록번호는 글로 쓰지 않고, 등록했는지만 알려요) */
+  const chip=d.ct==='외장칩'?{a:'외장칩',b:'장착'}:d.ct==='내장칩'?{a:'내장칩',b:'등록 완료'}:d.rn?{a:'동물등록',b:'완료'}:null;
+  const neu=d.nu==='완료'?{t:'중성화 완료',done:true}:d.nu==='미완료'?{t:'중성화는 아직 안 했어요',done:false}:null;
+  has.r=!!(chip||neu);M.reg=has.r&&!off.has('r')?{chip:chip,neu:neu}:null;
+  /* 병원: 가장 최근 기록 */
+  const hl=l.filter(x=>x.type==='병원'&&x.d).sort((a,b)=>String(b.d).localeCompare(String(a.d))||(b.id||0)-(a.id||0))[0];
+  has.h=!!hl;M.hosp=hl&&!off.has('h')?{d:mdk(hl.d),memo:cl(hl.memo)||'진료를 받았어요'}:null;
+  /* 성격 */
+  const nt=cl(d.note);has.n=!!nt;M.note=nt&&!off.has('n')?nt:'';
+  /* 오픈카톡 링크 */
+  M.link=String(c.oc||'').replace(/\s+/g,'');M.linkShow=M.link.replace(/^https?:\/\//i,'').replace(/\/+$/,'');
+  return M}
+
+/* ── 그리기 도구 ── */
+function rr(c,x,y,w,h,r){r=Math.min(r,w/2,h/2);c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+function shadow(c,col,b,dy){c.shadowColor=col;c.shadowBlur=b*K;c.shadowOffsetX=0;c.shadowOffsetY=dy*K}
+function tilt(c,x,y,w,h,deg,fn){c.save();c.translate(x+w/2,y+h/2);c.rotate(deg*Math.PI/180);c.translate(-w/2,-h/2);fn();c.restore()}
+function pt(x,y,w,h,deg,lx,ly){const a=deg*Math.PI/180,dx=lx-w/2,dy=ly-h/2;return[x+w/2+dx*Math.cos(a)-dy*Math.sin(a),y+h/2+dx*Math.sin(a)+dy*Math.cos(a)]}
+function T(c,s,x,cy,z,fam,wt,col,al){c.font=wt+' '+z+'px '+fam;c.fillStyle=col;c.textAlign=al||'left';c.textBaseline='alphabetic';c.fillText(s,x,cy+z*.36)}
+function mw(c,s,z,fam,wt){c.font=wt+' '+z+'px '+fam;return c.measureText(s).width}
+function fit1(c,s,fam,wt,max,min,w){let z=max;while(z>min&&mw(c,s,z,fam,wt)>w)z--;return z}
+function clip1(c,s,w){if(c.measureText(s).width<=w)return s;let t=s;while(t.length>1&&c.measureText(t+'…').width>w)t=t.slice(0,-1);return t+'…'}
+/* 한 줄 글: 칸에 안 들어가면 글자를 줄이고, 그래도 안 되면 … 으로 줄여요 */
+function T1(c,s,x,cy,zmax,zmin,w,fam,wt,col,al){const z=fit1(c,s,fam,wt,zmax,zmin,w);c.font=wt+' '+z+'px '+fam;T(c,clip1(c,s,w),x,cy,z,fam,wt,col,al);return z}
+/* 여러 줄 글: 띄어쓰기 단위로 줄을 바꾸고, 칸에 안 들어가면 글자를 줄이고, 그래도 안 되면 마지막 줄을 … 으로 줄여요 */
+function wrap(c,s,w){const out=[];let ln='';
+  s.split(' ').filter(Boolean).forEach(t=>{const u=ln?ln+' '+t:t;if(c.measureText(u).width<=w){ln=u;return}
+    if(ln){out.push(ln);ln=''}
+    if(c.measureText(t).width<=w){ln=t;return}
+    let p='';for(const ch of t){if(p&&c.measureText(p+ch).width>w){out.push(p);p=ch}else p+=ch}ln=p});
+  if(ln)out.push(ln);return out}
+function block(c,s,fam,wt,sizes,w,h,lhf){
+  for(let i=0;i<sizes.length;i++){const z=sizes[i],lh=lhf(z);c.font=wt+' '+z+'px '+fam;const L=wrap(c,s,w);
+    if(L.length*lh<=h||i===sizes.length-1){let lines=L;const n=Math.max(1,Math.floor(h/lh));
+      if(L.length>n){lines=L.slice(0,n);let t=lines[n-1];while(t.length>1&&c.measureText(t+'…').width>w)t=t.slice(0,-1);lines[n-1]=t+'…'}
+      return{lines:lines,size:z,lh:lh}}}}
+const PH=new Path2D('M12 20.5C5 15.4 3 12.2 3 9.2 3 6.7 5 5 7.2 5c1.9 0 3.5 1 4.8 2.9C13.3 6 14.9 5 16.8 5 19 5 21 6.7 21 9.2c0 3-2 6.2-9 11.3z'),
+  PS=new Path2D('M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z'),
+  PC=new Path2D('M6.5 12.5C8 14 9 15.5 10 17 12 12 14.5 9 18 6.5');
+function heart(c,x,y,z,col){c.save();c.translate(x,y);c.scale(z/24,z/24);c.fillStyle=col;c.fill(PH);c.restore()}
+function star(c,x,y,z,col){c.save();c.translate(x,y);c.scale(z/24,z/24);c.fillStyle=col;c.strokeStyle=NAVY;c.lineWidth=1.2;c.lineJoin='round';c.fill(PS);c.stroke(PS);c.restore()}
+function chk(c,x,y,z){c.save();c.translate(x,y);c.scale(z/24,z/24);rr(c,2,2,20,20,6);c.fillStyle='#FFFFFF';c.fill();c.strokeStyle=NAVY;c.lineWidth=2;c.stroke();c.strokeStyle=BLUE;c.lineWidth=2.8;c.lineCap='round';c.lineJoin='round';c.stroke(PC);c.restore()}
+function paw(c,x,y,z,col){c.save();c.translate(x,y);c.scale(z/24,z/24);c.fillStyle=col;[[12,16.5,5.2,4.4],[5.2,10.6,2.2,2.8],[9.4,6.2,2.2,2.9],[14.6,6.2,2.2,2.9],[18.8,10.6,2.2,2.8]].forEach(e=>{c.beginPath();c.ellipse(e[0],e[1],e[2],e[3],0,0,6.2832);c.fill()});c.restore()}
+function pin(c,p,col){const x=p[0],y=p[1];c.save();c.fillStyle='rgba(0,0,0,.25)';c.beginPath();c.ellipse(x+3,y+7,8,4.5,0,0,6.2832);c.fill();
+  c.fillStyle=col;c.strokeStyle='rgba(0,0,0,.2)';c.lineWidth=1.5;c.beginPath();c.arc(x,y,9,0,6.2832);c.fill();c.stroke();
+  c.fillStyle='rgba(255,255,255,.65)';c.beginPath();c.ellipse(x-3,y-3.5,3.2,2.2,0,0,6.2832);c.fill();c.restore()}
+function washi(c,x,y,w,h,deg,col){tilt(c,x,y,w,h,deg,()=>{c.save();c.globalAlpha=.92;c.fillStyle=col;c.fillRect(0,0,w,h);c.globalAlpha=.5;c.strokeStyle='#FFFFFF';c.lineWidth=3;
+  c.beginPath();c.rect(0,0,w,h);c.clip();c.beginPath();for(let i=0;i<(w+h)/16+2;i++){c.moveTo(i*16-h,h);c.lineTo(i*16,0)}c.stroke();c.restore()})}
+/* 사진: 칸을 꽉 채우게 자르고(얼굴이 위쪽에 있는 경우가 많아서 위쪽을 더 살려요), 사진이 없으면 발바닥 그림 */
+function photo(c,img,x,y,w,h,bg){c.save();c.beginPath();c.rect(x,y,w,h);c.clip();c.fillStyle=bg;c.fillRect(x,y,w,h);
+  if(img){const s=Math.max(w/img.width,h/img.height),dw=img.width*s,dh=img.height*s;c.imageSmoothingQuality='high';c.drawImage(img,x+(w-dw)/2,y+(h-dh)*.35,dw,dh)}
+  else{const z=Math.min(w,h)*.42;paw(c,x+(w-z)/2,y+(h-z)/2,z,'rgba(31,42,92,.28)')}
+  c.restore()}
+function foot(c,lg,cy,col){const z=13;c.font='400 '+z+'px '+FJ;const tw=c.measureText(FOOT).width,x=(W-(32+tw))/2;
+  c.save();c.beginPath();c.arc(x+12,cy,12,0,6.2832);c.fillStyle='#FFFFFF';c.fill();c.clip();
+  if(lg){const s=Math.max(24/lg.width,24/lg.height);c.drawImage(lg,x+12-lg.width*s/2,cy-lg.height*s/2,lg.width*s,lg.height*s)}c.restore();
+  T(c,FOOT,x+32,cy,z,FJ,400,col,'left')}
+
+/* ── 모양 1 · 코르크보드 ── */
+/* 폴라로이드(236×286) 아래 글씨: 이름은 크게, 성별·나이는 작게.
+   이름이 길면 성별·나이를 아래 줄로 내리고, 아주 길면 이름을 두 줄로 쓰고 사진 칸을 조금 줄여요. */
+function corkCap(c,M){
+  const hb=!!M.basic,bz=hb?fit1(c,M.basic,FJ,400,15,11,104):15,bw=hb?Math.min(mw(c,M.basic,bz,FJ,400),104):0,
+    ws=198-(hb?bw+10:0),zs=fit1(c,M.name,FG,700,40,22,ws);
+  if(mw(c,M.name,zs,FG,700)<=ws&&(!hb||zs>=28))
+    return{pz:212,draw:()=>{if(hb){c.font='400 '+bz+'px '+FJ;T(c,clip1(c,M.basic,104),218,255,bz,FJ,400,SUB,'right')}T(c,M.name,20,255,zs,FG,700,NAVY)}};
+  const z1=fit1(c,M.name,FG,700,36,22,198);
+  if(mw(c,M.name,z1,FG,700)<=198)
+    return{pz:212,draw:()=>{T(c,M.name,20,hb?243:255,z1,FG,700,NAVY);if(hb)T1(c,M.basic,20,274,13,10,198,FJ,400,SUB)}};
+  const b=block(c,M.name,FG,700,[20,19,18],198,44,z=>Math.round(z*1.1)),pz=hb?200:212,st=12+pz,n=b.lines.length,y0=st+(286-st-(n*b.lh+(hb?20:0)))/2;
+  return{pz:pz,draw:()=>{b.lines.forEach((t,i)=>T(c,t,20,y0+b.lh*(i+.5),b.size,FG,700,NAVY));if(hb)T1(c,M.basic,20,y0+n*b.lh+12,13,10,198,FJ,400,SUB)}}}
+function cork(c,M,ph,lg){
+  const SH='rgba(60,35,10,.35)';
+  c.fillStyle='#8A5A2B';c.fillRect(0,0,W,H);c.fillStyle='#CFA06A';c.fillRect(14,14,512,647);
+  let s=11;const rn=()=>(s=(s*1664525+1013904223)>>>0)/4294967296,cc=['#B8864F','#E3BC87','#A66F3C','#D9A96F','#BE8E58'],rd=[.9,1.2,1.6,2,2.6];
+  for(let i=0;i<420;i++){const x=14+rn()*512,y=14+rn()*647;c.fillStyle=cc[(rn()*5)|0];c.beginPath();c.arc(x,y,rd[(rn()*5)|0],0,6.2832);c.fill()}
+  c.lineWidth=5;c.strokeStyle='rgba(110,69,32,.55)';c.strokeRect(14,14,512,647);c.lineWidth=3;c.strokeStyle='rgba(168,116,60,.8)';c.strokeRect(3,3,534,669);
+  /* 걸이 표지판 */
+  tilt(c,112,26,316,76,-1,()=>{
+    c.save();shadow(c,SH,10,6);c.fillStyle='#FFF6DC';rr(c,0,0,316,76,8);c.fill();c.restore();
+    c.save();c.strokeStyle='#D9C79B';c.lineWidth=2;c.setLineDash([6,4]);rr(c,5,5,306,66,5);c.stroke();c.restore();
+    T(c,'가족을 찾아요!',158,26,30,FJ,400,NAVY,'center');
+    T(c,mdk(today())+' 기록 기준',158,57,18,FG,700,SUB,'center')});
+  pin(c,[128,34],'#F2C230');pin(c,[412,30],'#F2C230');
+  /* 건강 기록 색인 카드에 들어갈 칸 */
+  const sec=[];
+  if(M.vacc){const v=M.vacc,r=[];if(v.main)r.push(v.main.a+' '+v.main.b);if(v.ex[0])r.push(v.ex[0].a+' '+v.ex[0].b);if(v.next)r.push('다음 '+v.next.a+' · '+v.next.d);if(r.length)sec.push({h:'접종',r:r})}
+  if(M.reg){const r=[];if(M.reg.chip)r.push(M.reg.chip.a+' '+M.reg.chip.b);if(M.reg.neu)r.push(M.reg.neu.t);if(r.length)sec.push({h:'등록 · 중성화',r:r})}
+  if(M.hosp)sec.push({h:'병원 · '+M.hosp.d,memo:M.hosp.memo});
+  sec.forEach(q=>{if(q.memo){q.b=block(c,q.memo,FG,700,[18,16,14],202,48,()=>24);q.n=q.b.lines.length}else q.n=q.r.length;q.hh=2+18+24*q.n});
+  const ch=44+sec.reduce((a,q)=>a+q.hh,0)+12,hd=mw(c,M.name+' 건강 기록',14,FJ,400)<=202?M.name+' 건강 기록':'건강 기록';
+  /* 포스트잇(성격 · 몸무게)의 크기부터 재요 */
+  const hasN=!!M.note,hasW=!!M.weight,solo=!sec.length&&!hasN&&!hasW,top=Math.max(420,sec.length?126+ch+14:420),bot=M.link?556:604,
+    sw=hasW?296:440,sx=hasW?34:50,ww=170,wh=hasW&&M.weight.d?112:90;
+  let nb=null,sh=0;
+  if(hasN){nb=block(c,M.note,FG,700,[19,18,17,16,15,14],sw-32,bot-top-48,z=>Math.round(z*1.26));sh=16+18+2+nb.lines.length*nb.lh+12}
+  /* 내용이 적으면 전체를 조금 아래로 내려서 위아래 빈자리를 비슷하게 맞춰요 (사진만 있으면 사진을 크게) */
+  const low=hasN||hasW?top+Math.max(hasN?sh:0,hasW?wh+(hasN?8:0):0):Math.max(410,sec.length?126+ch+6:0),
+    dy=solo?0:Math.max(0,Math.min(90,Math.round(((M.link?558:628)-low)*.45)));
+  const cap=corkCap(c,M),S=solo?1.3:1,pw=236*S,pH=286*S,px=solo?(W-pw)/2:(sec.length?36:152),
+    py=solo?Math.round(108+((M.link?556:626)-108-pH)/2):124+dy;
+  /* 폴라로이드 (기록이 없어서 색인 카드가 없으면 가운데로) */
+  tilt(c,px,py,pw,pH,-4,()=>{c.scale(S,S);
+    c.save();shadow(c,SH,10,6);c.fillStyle='#FFFFFF';c.fillRect(0,0,236,286);c.restore();
+    photo(c,ph,12,12,212,cap.pz,'#CDEBFF');cap.draw()});
+  pin(c,pt(px,py,pw,pH,-4,118*S,6*S),'#D6392F');
+  if(sec.length){
+    tilt(c,280,126+dy,230,ch,2.5,()=>{
+      c.save();shadow(c,SH,10,6);c.fillStyle='#FFFEF8';c.fillRect(0,0,230,ch);c.restore();
+      T1(c,hd,14,25,17,12,202,FJ,400,NAVY);
+      c.fillStyle='#E0524F';c.fillRect(14,42,202,2);
+      let y=44;
+      sec.forEach(q=>{y+=2;T(c,q.h,14,y+9,13,FJ,400,BLUE);y+=18;
+        if(q.memo)q.b.lines.forEach(t=>{T(c,t,14,y+12,q.b.size,FG,700,NAVY);c.fillStyle='#CFE0FF';c.fillRect(14,y+23,202,1);y+=24});
+        else q.r.forEach(t=>{T1(c,t,14,y+12,18,12,202,FG,700,NAVY);c.fillStyle='#CFE0FF';c.fillRect(14,y+23,202,1);y+=24})})});
+    pin(c,pt(280,126+dy,230,ch,2.5,116,6),'#2F5FD0')}
+  /* 포스트잇: 성격(노랑) + 몸무게(분홍) */
+  if(hasN){
+    tilt(c,sx,top+dy,sw,sh,-1.5,()=>{
+      c.save();shadow(c,SH,10,6);c.fillStyle='#FFE978';c.fillRect(0,0,sw,sh);c.restore();
+      T(c,'성격',16,25,15,FJ,400,BLUE);
+      nb.lines.forEach((t,i)=>T(c,t,16,36+i*nb.lh+nb.lh/2,nb.size,FG,700,NAVY))});
+    pin(c,pt(sx,top+dy,sw,sh,-1.5,sw/2,4),'#2E9E5B')}
+  if(hasW){const wx=hasN?348:185,wy=top+dy+(hasN?8:0);
+    tilt(c,wx,wy,ww,wh,2,()=>{
+      c.save();shadow(c,SH,10,6);c.fillStyle='#FFC2D6';c.fillRect(0,0,ww,wh);c.restore();
+      T(c,'몸무게',12,25,14,FJ,400,NAVY);
+      T1(c,M.weight.t,12,56,36,20,146,FG,700,NAVY);
+      if(M.weight.d)T1(c,M.weight.d+' 기록',12,87,17,12,146,FG,700,SUB)});
+    pin(c,pt(wx,wy,ww,wh,2,ww/2,4),'#F2C230')}
+  /* 입양 문의 명함 */
+  if(M.link){
+    tilt(c,42,570,456,46,-.8,()=>{
+      c.save();shadow(c,SH,10,6);c.fillStyle='#FFFFFF';rr(c,0,0,456,46,6);c.fill();c.restore();
+      c.save();rr(c,0,0,456,46,6);c.clip();c.fillStyle=NAVY;c.fillRect(0,0,104,46);c.restore();
+      T(c,'입양 문의',52,23,17,FJ,400,'#FFFFFF','center');
+      T(c,'오픈채팅',118,23,13,FJ,400,SUB);
+      T1(c,M.linkShow,442,23,14,10,442-118-mw(c,'오픈채팅',13,FJ,400)-12,FJ,400,NAVY,'right')});
+    pin(c,pt(42,570,456,46,-.8,16,4),'#D6392F')}
+  foot(c,lg,641,NAVY)}
+
+/* ── 모양 2 · 폴라로이드 ── */
+const eun=s=>{const ch=String(s||'').trim().slice(-1),n=ch.charCodeAt(0);
+  if(n>=0xAC00&&n<=0xD7A3)return (n-0xAC00)%28?'은':'는';
+  return /[013678]/.test(ch)?'은':'는'};
+function tiles(M){
+  const t=[];
+  if(M.vacc){const v=M.vacc;let big,cap;
+    big=v.main?[v.main.a,v.main.b]:v.ex[0]?[v.ex[0].a,v.ex[0].b]:['접종','예정'];
+    if(v.next)cap=['다음 '+v.next.a+eun(v.next.a),v.next.d];
+    else if(v.main&&v.ex.length)cap=['그 밖에',v.ex.map(x=>x.a).join(' · ')];
+    else if(v.main&&v.main.d)cap=[v.main.d,'접종'];
+    else cap=['',''];
+    t.push({big:big,cap:cap})}
+  if(M.hosp)t.push({free:M.hosp.memo,cap:[M.hosp.d,'병원 기록']});
+  if(M.reg){const r=M.reg;let big,cap=['',''];
+    if(r.chip){big=[r.chip.a,r.chip.b];if(r.neu)cap=r.neu.done?['중성화','완료']:['중성화는','아직 안 했어요']}
+    else big=['중성화',r.neu.done?'완료':'아직 전'];
+    t.push({big:big,cap:cap})}
+  return t}
+function tile(c,x,y,rot,bg,t){
+  tilt(c,x,y,156,160,rot,()=>{
+    c.save();shadow(c,'rgba(70,50,130,.25)',14,6);c.fillStyle='#FFFFFF';c.fillRect(0,0,156,160);c.restore();
+    c.fillStyle=bg;c.fillRect(10,10,136,100);
+    let L,z,lh;
+    if(t.free){const b=block(c,t.free,FJ,400,[21,19,17,15],132,66,q=>Math.round(q*1.15));L=b.lines;z=b.size;lh=b.lh}
+    else{L=t.big.filter(Boolean);z=Math.min.apply(null,L.map(s=>fit1(c,s,FJ,400,21,13,132)));lh=24}
+    const top=10+(100-(27+L.length*lh))/2;
+    chk(c,67,top,22);
+    L.forEach((s,i)=>{c.font='400 '+z+'px '+FJ;T(c,clip1(c,s,132),78,top+27+i*lh+lh/2,z,FJ,400,NAVY,'center')});
+    t.cap.forEach((s,i)=>{if(s)T1(c,s,78,126.5+i*21,17,12,142,FS,400,NAVY,'center')})})}
+/* 이름: 한 줄로 크게, 너무 길면 두 줄로 줄여서 써요 */
+function nameFit(c,s,fam,wt,w,max,min,h){
+  const z=fit1(c,s,fam,wt,max,min,w);
+  if(mw(c,s,z,fam,wt)<=w)return{lines:[s],size:z,lh:z};
+  return block(c,s,fam,wt,[min,min-2,min-4],w,h,q=>Math.round(q*1.12))}
+/* 알약(성별 · 나이 · 몸무게): 폭에 맞춰 줄을 나눠요 */
+function pillRows(c,pl,maxW){
+  const ws=pl.map(p=>Math.min(mw(c,p[0],16,FJ,400),maxW-30)+30),rows=[];let cw=0;
+  pl.forEach((p,i)=>{if(!rows.length||cw+ws[i]>maxW){rows.push([]);cw=0}rows[rows.length-1].push(i);cw+=ws[i]+7});
+  return{rows:rows,ws:ws,h:rows.length?rows.length*38-6:0}}
+function pillDraw(c,pl,R,cx,y,maxW){
+  R.rows.forEach((r,ri)=>{let x=cx-(r.reduce((a,i)=>a+R.ws[i],0)+7*(r.length-1))/2;
+    r.forEach(i=>{const p=pl[i],w=R.ws[i];
+      tilt(c,x,y+ri*38,w,32,p[2],()=>{c.save();shadow(c,'rgba(70,50,130,.18)',6,2);c.fillStyle=p[1];rr(c,0,0,w,32,16);c.fill();c.restore();
+        c.strokeStyle='#FFFFFF';c.lineWidth=2;rr(c,1,1,w-2,30,15);c.stroke();T1(c,p[0],w/2,16,16,11,maxW-30,FJ,400,NAVY,'center')});
+      x+=w+7})})}
+function pola(c,M,ph,lg){
+  c.fillStyle='#EBE4FF';c.fillRect(0,0,W,H);
+  [['s',6,150,'#FFD36B',14],['h',505,128,'#FF8FA8',18],['d',276,100,'#FFFFFF',8],['s',508,380,'#FFD36B',16],['d',14,380,'#FFFFFF',8],['h',8,336,'#FF8FA8',16],['d',520,560,'#FFFFFF',8],['s',270,378,'#FFFFFF',14],['d',150,380,'#FFB3C6',7],['d',445,100,'#FFFFFF',7]]
+    .forEach(e=>{if(e[0]==='s')star(c,e[1],e[2],e[4],e[3]);else if(e[0]==='h')heart(c,e[1],e[2],e[4],e[3]);else{c.fillStyle=e[3];c.beginPath();c.arc(e[1]+e[4]/2,e[2]+e[4]/2,e[4]/2,0,6.2832);c.fill()}});
+  /* 깃발 제목 */
+  const fc=['#FFB3C6','#BFEBDD','#FFE08A','#BFE0FF','#FFCDBE','#D9CCFF','#FFB3C6'],fl=['가','족','을','찾','아','요','!'];
+  c.strokeStyle='#7B6BB5';c.lineWidth=2;c.beginPath();c.moveTo(-10,14);c.quadraticCurveTo(270,52,550,14);c.stroke();
+  fl.forEach((ch,i)=>{const cx=62+i*69,tt=(cx+10)/560,y0=14+76*tt*(1-tt),a=Math.atan(76*(1-2*tt)/560);
+    c.save();c.translate(cx,y0);c.rotate(a);c.beginPath();c.moveTo(-29,0);c.lineTo(29,0);c.lineTo(0,60);c.closePath();c.fillStyle=fc[i];c.fill();c.strokeStyle='#FFFFFF';c.lineWidth=2;c.lineJoin='round';c.stroke();
+    T(c,ch,0,19.6,26,FJ,400,NAVY,'center');c.restore()});
+  /* 들어갈 것들의 크기부터 재요 */
+  const tl=tiles(M),n=tl.length,hasN=!!M.note,solo=!n&&!hasN,AB=M.link?572:636;
+  const pl=[];if(M.sex)pl.push([M.sex,'#CDEBFF',-2]);if(M.age)pl.push([M.age,'#FFD3E6',2]);if(M.weight)pl.push([M.weight.t,'#C9F2E6',-1]);
+  const PR=pillRows(c,pl,solo?440:232);
+  let nb=null,sh=0;
+  if(hasN){nb=block(c,M.note,FS,400,[20,19,18,17,16,15,14],184,148,z=>Math.round(z*1.3));sh=16+16+6+nb.lines.length*nb.lh+18}
+  /* 내용이 적으면 전체를 조금 아래로 내려서 위아래 빈자리를 비슷하게 맞춰요 (타일도 성격도 없으면 사진을 크게) */
+  const colBot=hasN?102+sh+(PR.h?16+PR.h:0):378,low=n?560:Math.max(380,colBot),dy=solo?0:Math.max(0,Math.min(110,Math.round((AB-low)*.45)));
+  const S=solo?1.3:1,pw=236*S,pH=284*S,tot=pH+(PR.h?26+PR.h:0),
+    px=solo?(W-pw)/2:30,py=solo?Math.max(96,Math.round(92+(AB-92-tot)/2)):94+dy;
+  /* 큰 사진 폴라로이드 */
+  tilt(c,px,py,pw,pH,-3,()=>{c.scale(S,S);
+    c.save();shadow(c,'rgba(70,50,130,.28)',20,10);c.fillStyle='#FFFFFF';c.fillRect(0,0,236,284);c.restore();
+    photo(c,ph,11,12,214,214,'#CDEBFF');
+    const nf=nameFit(c,M.name,FS,400,164,40,22,54);
+    nf.lines.forEach((t,i)=>T(c,t,19,255+(i-(nf.lines.length-1)/2)*nf.lh,nf.size,FS,400,NAVY));
+    heart(c,191,241,28,'#FF8FA8')});
+  washi(c,px+74*S,py-10*S,84,24,3,'#FFC2D2');
+  /* 성격 포스트잇 + 알약 */
+  if(hasN){
+    tilt(c,290,102+dy,216,sh,2.5,()=>{
+      c.save();shadow(c,'rgba(70,50,130,.25)',16,8);c.fillStyle='#FFF0A8';c.fillRect(0,0,216,sh);c.restore();
+      T(c,'성격',16,24,16,FJ,400,BLUE);
+      nb.lines.forEach((t,i)=>T(c,t,16,38+i*nb.lh+nb.lh/2,nb.size,FS,400,NAVY))});
+    washi(c,372,92+dy,70,22,-4,'#BFEBDD');
+    if(PR.h)pillDraw(c,pl,PR,398,102+dy+sh+16,232)}
+  else if(solo){if(PR.h)pillDraw(c,pl,PR,W/2,py+pH+26,440)}
+  else if(PR.h)pillDraw(c,pl,PR,398,py+(284-PR.h)/2,232);
+  /* 정보 폴라로이드 (있는 것만, 가운데로) */
+  const xs=n===3?[24,192,360]:n===2?[102,282]:[192],ys=[396,402,394],rs=[-4,2.5,-2],bgs=['#C9F2E6','#CDEBFF','#FFD6C9'];
+  tl.forEach((t,i)=>tile(c,xs[i],ys[i]+dy,rs[i],bgs[i],t));
+  /* 입양 문의 티켓 */
+  if(M.link){
+    tilt(c,24,584,492,50,-.6,()=>{
+      c.fillStyle='#FFB3C6';rr(c,0,0,492,50,12);c.fill();
+      c.fillStyle='#EBE4FF';[0,492].forEach(x=>{c.beginPath();c.arc(x,25,9,0,6.2832);c.fill()});
+      c.save();c.strokeStyle='rgba(31,42,92,.35)';c.lineWidth=2;c.setLineDash([6,4]);rr(c,12,5,468,40,8);c.stroke();c.restore();
+      T(c,'입양 문의는 오픈채팅으로',26,25,17,FJ,400,NAVY);
+      T1(c,M.linkShow,466,25,14,10,466-26-mw(c,'입양 문의는 오픈채팅으로',17,FJ,400)-12,FJ,400,NAVY,'right')})}
+  foot(c,lg,654,NAVY)}
+
+/* ── 그림 만들기 (글꼴 · 사진을 불러온 뒤 한 번에 그려요) ── */
+function fonts(s){
+  if(!document.fonts||!document.fonts.load)return Promise.resolve();
+  const t=(STAT+s).slice(0,1500);
+  const job=Promise.all([document.fonts.load('30px Jua',t),document.fonts.load('700 20px Gaegu',t),document.fonts.load('20px "Single Day"',t)]).catch(()=>0);
+  return Promise.race([job,new Promise(r=>setTimeout(r,5000))])}
+function getPhoto(u){
+  if(!u)return Promise.resolve(null);
+  if(phC.u===u)return Promise.resolve(phC.i);
+  return new Promise(res=>{const i=new Image();i.onload=()=>{phC={u:u,i:i};res(i)};i.onerror=()=>res(null);i.src=u})}
+function getLogo(){
+  if(lgC)return Promise.resolve(lgC);
+  const el=document.querySelector('header img');
+  if(!el||!el.src)return Promise.resolve(null);
+  return new Promise(res=>{const i=new Image();i.onload=()=>{lgC=i;res(i)};i.onerror=()=>res(null);i.src=el.src})}
+function render(){tmr=0;const my=++seq;pend=draw(my);return pend}
+async function draw(my){
+  const cv=$('prcv');if(!cv)return;
+  try{
+    if(!shown){const c0=cv.getContext('2d');c0.setTransform(1,0,0,1,0,0);c0.fillStyle='#EEF0F8';c0.fillRect(0,0,cv.width,cv.height);
+      c0.fillStyle='#4A5688';c0.textAlign='center';c0.textBaseline='middle';c0.font='400 44px sans-serif';c0.fillText('카드를 그리는 중이에요…',cv.width/2,cv.height/2)}
+    const d=D(),M=model(d);
+    await fonts(JSON.stringify(M));
+    const r=await Promise.all([getPhoto(d.photo),getLogo()]);
+    if(my!==seq)return;
+    const c=cv.getContext('2d');c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,cv.width,cv.height);c.scale(K,K);
+    (M.style==='pola'?pola:cork)(c,M,r[0],r[1]);shown=true;
+    cv.setAttribute('aria-label',M.name+' 입양 홍보카드 미리보기');
+    blob=null;cv.toBlob(b=>{if(my===seq)blob=b},'image/png')
+  }catch(e){if(my===seq)toast('카드를 그리지 못했어요. 다른 화면에 갔다가 다시 와 주세요')}}
+function later(){clearTimeout(tmr);tmr=setTimeout(render,220)}
+
+/* ── 화면 ── */
+function ui(){
+  const d=D(),c=cfg(d),M=model(d);
+  $('pdogs').innerHTML=dogs.map(x=>'<button class="dc'+(x.id===cur?' on':'')+'" onclick="prSel('+J(x.id)+')">'+(x.photo?'<i><img src="'+esc(x.photo)+'" alt=""></i>':'')+esc(x.name||'이름 없음')+'</button>').join('');
+  ['cork','pola'].forEach(k=>{const b=$('pst_'+k);b.classList.toggle('on',c.s===k);b.setAttribute('aria-pressed',c.s===k)});
+  const li=$('prlink');if(document.activeElement!==li)li.value=c.oc;
+  $('prchips').innerHTML=PRK.map(k=>{const h=M.has[k[0]],on=h&&c.off.indexOf(k[0])<0;
+    return '<button type="button" class="dc'+(on?' on':'')+'"'+(h?'':' disabled')+' aria-pressed="'+on+'" onclick="prChip(\''+k[0]+'\')">'+k[1]+(h?'':' · 기록 없음')+'</button>'}).join('');
+  const w=[];
+  if(!d.photo)w.push('사진이 아직 없어요. 사진을 등록하면 카드가 훨씬 눈에 띄어요. <button type="button" onclick="go(\'pet\')">사진 등록하러 가기</button>');
+  if(/^(새 아이|이름 없음)$/.test(String(d.name||'').trim()))w.push('이름이 "'+esc(String(d.name||'').trim())+'"로 되어 있어요. <button type="button" onclick="go(\'pet\')">이름 바꾸러 가기</button>');
+  if(/(?:\+?82[-. ]?)?0\d{1,2}[-. ]?\d{3,4}[-. ]?\d{4}/.test((M.note||'')+' '+(M.hosp?M.hosp.memo:'')))w.push('성격이나 병원 메모에 전화번호처럼 보이는 숫자가 있어요. 카드에 그대로 들어가니 확인해 주세요.');
+  if(!['w','v','r','h'].some(k=>M.has[k]))w.push('아직 가져올 기록이 없어요. 체중·접종·병원 기록을 남기면 카드에 자동으로 채워져요. <button type="button" onclick="go(\'health\')">기록하러 가기</button>');
+  $('prwarn').innerHTML=w.map(t=>'<div class="prw">'+t+'</div>').join('')}
+function show(){ui();render()}
+function refresh(){const p=$('promo');if(p&&p.classList.contains('on'))show()}
+window.prShow=show;window.prAll=refresh;
+window.prSel=id=>{cur=id;saveD();all()};
+window.prStyle=s=>{setCfg(D(),{s:s});ui();render()};
+window.prChip=k=>{const c=cfg(D());setCfg(D(),{off:c.off.indexOf(k)<0?c.off.concat(k):c.off.filter(x=>x!==k)});ui();render()};
+window.prLink=()=>{setCfg(D(),{oc:$('prlink').value.replace(/\s+/g,'').slice(0,120)});later()};
+
+/* ── 저장 · 공유 ── */
+const blobOf=()=>new Promise(r=>$('prcv').toBlob(r,'image/png'));
+async function ready(){if(tmr){clearTimeout(tmr);await render()}else if(pend)await pend;return blob||await blobOf()}
+const b64Of=b=>new Promise((res,rej)=>{const f=new FileReader();f.onload=()=>res(String(f.result).split(',')[1]||'');f.onerror=()=>rej(f.error);f.readAsDataURL(b)});
+async function save(){
+  try{
+    toast('카드를 만드는 중이에요…');
+    const b=await ready();if(!b){toast('카드를 만들지 못했어요. 다시 눌러 주세요');return}
+    const d=D(),nm=cl(d.name)||'아이',oc=cfg(d).oc.replace(/\s+/g,''),full=oc?(/^https?:\/\//i.test(oc)?oc:'https://'+oc):'';
+    const C=window.Capacitor,P=C&&C.Plugins,native=!!(C&&C.isNativePlatform&&C.isNativePlatform());
+    if(native){
+      if(!(P&&P.Filesystem&&P.Share)){toast('앱을 새로 만들어야 저장·공유가 돼요. 안내서의 "홍보 탭" 부분을 확인해 주세요');return}
+      const f='kkotgil-card-'+Date.now()+'.png',r=await P.Filesystem.writeFile({path:f,data:await b64Of(b),directory:'CACHE'}),o={title:nm+' 입양 홍보카드',files:[r.uri],dialogTitle:'입양 카드 공유하기'};
+      if(full)o.text='입양 문의: '+full;
+      await P.Share.share(o);return}
+    const file=new File([b],nm.replace(/[\\\/:*?"<>|]/g,'')+'-입양카드.png',{type:'image/png'});
+    if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)&&navigator.canShare&&navigator.canShare({files:[file]})){
+      try{const o={files:[file],title:nm+' 입양 홍보카드'};if(full)o.text='입양 문의: '+full;await navigator.share(o);return}catch(e){if(e&&e.name==='AbortError')return}}
+    const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=file.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),8000);
+    toast('이미지를 저장했어요. 안 보이면 "크게 보기"에서 이미지를 길게 눌러 저장해 보세요')
+  }catch(e){if(/cancel|abort|dismiss/i.test([e&&e.name,e&&e.message,e].join(' ')))return;toast('저장·공유하지 못했어요. 다시 눌러 주세요')}}
+async function big(){
+  try{const b=await ready();if(!b){toast('카드를 만들지 못했어요. 다시 눌러 주세요');return}
+    if(bigU)URL.revokeObjectURL(bigU);bigU=URL.createObjectURL(b);
+    sh('카드 크게 보기','<img src="'+bigU+'" alt="입양 홍보카드" style="width:100%;height:auto;display:block;border-radius:12px"><p class="small" style="margin-top:8px">인터넷 화면에서는 이미지를 길게 누르면 저장할 수 있어요.</p>')
+  }catch(e){toast('카드를 열지 못했어요. 다시 눌러 주세요')}}
+window.prSave=save;window.prBig=big;
+window.prDbg={model:model,render:render};
+refresh();
+})();
 </script><script src="native.js"></script></body></html>
