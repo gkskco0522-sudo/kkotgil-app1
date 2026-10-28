@@ -64,6 +64,8 @@ html[data-theme="dark"] .lgb img{background:#fff;border-radius:16px;padding:6px 
 .prw{background:var(--p-cream);border-left:5px solid var(--soon);border-radius:14px;padding:10px 12px;margin:10px 0;font-size:13px;line-height:1.5;color:var(--ink)}
 .prw button{display:inline;min-height:0;padding:2px 8px;margin-left:4px;background:none;color:var(--bar);font-size:13px;font-weight:700;text-decoration:underline}
 .dc:disabled{opacity:.55;cursor:default}
+.prbtns{display:flex;gap:8px;margin-top:8px}.prbtns .btn{flex:1;min-width:0;background:var(--p-lav2)}
+.prhint{margin:10px 2px 0}
 </style><link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#CFE0FF">
@@ -94,7 +96,7 @@ html[data-theme="dark"] .lgb img{background:#fff;border-radius:16px;padding:6px 
 <details class="card"><summary><b>알람 소리</b> <span class="small" id="snow"></span></summary><p>안드로이드 앱에서 약·접종 알림이 울릴 때 나는 소리예요. 웹에서는 미리듣기만 돼요.</p><div id="sbox2" style="margin-top:10px"></div></details>
 <div class="card" style="background:var(--p-lav2)"><b>백업 · 복원</b><p>기록은 이 기기에 저장돼요. (구글 계정으로 로그인하면 내 계정에도 저장돼요.) 백업 내용을 복사해 메모 등에 보관해 두면, 나중에 아래 칸에 붙여넣어 복원할 수 있어요.</p><textarea id="bkt" rows="4" placeholder="백업 내용이 여기에 나타나요. 복원할 때는 여기에 붙여넣으세요."></textarea><div class="row2"><button onclick="bk()">백업 내용 만들기</button><button onclick="rs()">이 내용으로 복원</button></div></div>
 <div class="card"><b>데이터 삭제</b><p>모든 아이와 기록, 체중, 접종, 약 정보를 지워요. 되돌릴 수 없어요.<span id="wipenote"></span></p><button id="wipe" class="x" style="background:var(--p-wipe);color:var(--warn);border-radius:12px;padding:12px 14px;font-size:14px" onclick="wipeAll()">모든 기록 삭제</button></div>
-<div class="card"><b>앱 정보</b><p>너의 꽃길 · 아이들의 기록장<br>글씨체: 고운바탕<br>앱 버전: 2026.10.29 (홍보 카드)</p></div></section>
+<div class="card"><b>앱 정보</b><p>너의 꽃길 · 아이들의 기록장<br>글씨체: 고운바탕<br>앱 버전: 2026.10.29 (홍보 카드 · 갤러리 저장)</p></div></section>
 <section id="promo" class="page"><h2>입양 홍보카드</h2>
 <p>임보 기록으로 입양 홍보 그림을 만들어요. 전화번호·동물등록번호·집 주소는 카드에 넣지 않아요.</p>
 <div id="pdogs" class="strip"></div>
@@ -107,8 +109,9 @@ html[data-theme="dark"] .lgb img{background:#fff;border-radius:16px;padding:6px 
 <b style="font-size:15px">카드에 넣을 기록</b>
 <div id="prchips" class="chips"></div>
 <p class="small">아이 정보·체중·접종·병원 기록에서 자동으로 가져와요. 내용을 고치려면 해당 탭에서 바꿔 주세요. 성격·병원 메모는 적은 그대로 들어가니, 연락처 같은 개인정보가 섞여 있지 않은지 확인해 주세요.</p></div>
-<button class="btn" onclick="prSave()">이미지로 저장 · 공유</button>
-<button class="btn" style="margin-top:8px;background:var(--p-lav2)" onclick="prBig()">크게 보기</button>
+<button id="prgal" class="btn" onclick="prGal()">갤러리에 저장</button>
+<div class="prbtns"><button id="prshare" class="btn" onclick="prShare()">공유하기</button><button class="btn" onclick="prBig()">크게 보기</button></div>
+<p id="prhint" class="small prhint">카드는 다운로드 폴더에 저장돼요.</p>
 </section>
 </main><nav><button data-p="home" class="sel" onclick="go('home')">홈</button><button data-p="cal" onclick="go('cal')">달력</button><button data-p="health" onclick="go('health')">건강</button><button data-p="med" onclick="go('med')">약</button><button data-p="pet" onclick="go('pet')">아이</button><button data-p="promo" onclick="go('promo')">홍보</button></nav></div>
 <div class="sheet" id="sh"><div class="sbg" onclick="cs()"></div><div class="sbox" id="sbox"></div></div><div class="toast" id="toast"></div>
@@ -901,7 +904,10 @@ function ui(){
   if(/^(새 아이|이름 없음)$/.test(String(d.name||'').trim()))w.push('이름이 "'+esc(String(d.name||'').trim())+'"로 되어 있어요. <button type="button" onclick="go(\'pet\')">이름 바꾸러 가기</button>');
   if(/(?:\+?82[-. ]?)?0\d{1,2}[-. ]?\d{3,4}[-. ]?\d{4}/.test((M.note||'')+' '+(M.hosp?M.hosp.memo:'')))w.push('성격이나 병원 메모에 전화번호처럼 보이는 숫자가 있어요. 카드에 그대로 들어가니 확인해 주세요.');
   if(!['w','v','r','h'].some(k=>M.has[k]))w.push('아직 가져올 기록이 없어요. 체중·접종·병원 기록을 남기면 카드에 자동으로 채워져요. <button type="button" onclick="go(\'health\')">기록하러 가기</button>');
-  $('prwarn').innerHTML=w.map(t=>'<div class="prw">'+t+'</div>').join('')}
+  $('prwarn').innerHTML=w.map(t=>'<div class="prw">'+t+'</div>').join('');
+  const e=env(),sd=' "공유하기"는 카카오톡·인스타 등으로 바로 보낼 때 써요.';
+  $('prgal').textContent=(e.native||e.phone)?'갤러리에 저장':'이미지 파일로 저장';$('prshare').style.display=canShare()?'':'none';
+  $('prhint').textContent=e.native?'카드는 폰 갤러리의 "'+ALBUM+'" 앨범에 저장돼요.'+sd:e.ios?'"갤러리에 저장"을 누르면 공유창이 열려요. 거기서 "이미지 저장"을 고르면 사진 앱에 저장돼요.':e.phone?'카드는 폰의 다운로드 폴더(갤러리의 "다운로드" 앨범)에 저장돼요.'+(canShare()?sd:''):'카드는 이 컴퓨터의 다운로드 폴더에 저장돼요.'}
 function show(){ui();render()}
 function refresh(){const p=$('promo');if(p&&p.classList.contains('on'))show()}
 window.prShow=show;window.prAll=refresh;
@@ -911,32 +917,84 @@ window.prChip=k=>{const c=cfg(D());setCfg(D(),{off:c.off.indexOf(k)<0?c.off.conc
 window.prLink=()=>{setCfg(D(),{oc:$('prlink').value.replace(/\s+/g,'').slice(0,120)});later()};
 
 /* ── 저장 · 공유 ── */
+const ALBUM='너의 꽃길';
 const blobOf=()=>new Promise(r=>$('prcv').toBlob(r,'image/png'));
 async function ready(){if(tmr){clearTimeout(tmr);await render()}else if(pend)await pend;return blob||await blobOf()}
 const b64Of=b=>new Promise((res,rej)=>{const f=new FileReader();f.onload=()=>res(String(f.result).split(',')[1]||'');f.onerror=()=>rej(f.error);f.readAsDataURL(b)});
-async function save(){
+/* 지금 어디서 열렸는지: 안드로이드 앱(native) · 폰 인터넷 화면(phone) · 컴퓨터 */
+function env(){const C=window.Capacitor,u=navigator.userAgent;return{P:(C&&C.Plugins)||{},native:!!(C&&C.isNativePlatform&&C.isNativePlatform()),phone:/Android|iPhone|iPad|iPod/i.test(u),ios:/iPhone|iPad|iPod/i.test(u)}}
+function canShare(){const e=env();if(e.native)return true;if(!e.phone||!navigator.canShare)return false;try{return !!navigator.canShare({files:[new File(['x'],'a.png',{type:'image/png'})]})}catch(x){return false}}
+let tt=0,busy=false;
+/* 안내 글: 앱 기본 toast 는 2.2초라 결과 글은 더 오래 보여 줘요 */
+function say(t,ms){const e=$('toast');if(!e){toast(t);return}clearTimeout(tt);e.textContent=t;e.classList.add('on');tt=setTimeout(()=>e.classList.remove('on'),ms||2200)}
+function hush(){clearTimeout(tt);const e=$('toast');if(e)e.classList.remove('on')}
+const gone=e=>/cancel|abort|dismiss/i.test([e&&e.name,e&&e.message,e].join(' '));
+async function prep(){
+  const w=setTimeout(()=>say('카드를 만드는 중이에요…',20000),300);
+  let b;try{b=await ready()}finally{clearTimeout(w)}
+  hush();
+  if(!b){say('카드를 만들지 못했어요. 다시 눌러 주세요');return null}
+  const d=D(),nm=cl(d.name)||'아이',oc=cfg(d).oc.replace(/\s+/g,''),full=oc?(/^https?:\/\//i.test(oc)?oc:'https://'+oc):'';
+  return{b:b,nm:nm,full:full,fn:nm.replace(/[\\\/:*?"<>|]/g,'')+'-입양카드.png'}}
+function download(x){const u=URL.createObjectURL(x.b),a=document.createElement('a');a.href=u;a.download=x.fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),8000)}
+/* 앱: 파일로 만들어 폰의 공유창(카카오톡·메시지 등)을 열어요 */
+async function nativeShare(x,P){
+  const f='kkotgil-card-'+Date.now()+'.png',r=await P.Filesystem.writeFile({path:f,data:await b64Of(x.b),directory:'CACHE'}),o={title:x.nm+' 입양 홍보카드',files:[r.uri],dialogTitle:'입양 카드 공유하기'};
+  if(x.full)o.text='입양 문의: '+x.full;
+  await P.Share.share(o)}
+/* 앱: 폰 갤러리의 "너의 꽃길" 앨범에 넣어요 (@capacitor-community/media) */
+async function toAlbum(x,M){
+  try{await M.createAlbum({name:ALBUM})}catch(e){}  /* 앨범이 이미 있으면 거절돼요 → 괜찮아요 */
+  let id='';
+  if(M.getAlbumsPath){const r=await M.getAlbumsPath();if(r&&r.path)id=String(r.path).replace(/\/+$/,'')+'/'+ALBUM}
+  if(!id){const r=await M.getAlbums(),a=((r&&r.albums)||[]).filter(z=>z&&z.name===ALBUM)[0];if(a)id=a.identifier}
+  if(!id)throw new Error('albumNotFound');
+  await M.savePhoto({path:'data:image/png;base64,'+await b64Of(x.b),albumIdentifier:id,fileName:'kkotgil-card-'+Date.now()})}
+
+/* [공유하기] 공유창으로 보내기 */
+async function share(){
   try{
-    toast('카드를 만드는 중이에요…');
-    const b=await ready();if(!b){toast('카드를 만들지 못했어요. 다시 눌러 주세요');return}
-    const d=D(),nm=cl(d.name)||'아이',oc=cfg(d).oc.replace(/\s+/g,''),full=oc?(/^https?:\/\//i.test(oc)?oc:'https://'+oc):'';
-    const C=window.Capacitor,P=C&&C.Plugins,native=!!(C&&C.isNativePlatform&&C.isNativePlatform());
-    if(native){
-      if(!(P&&P.Filesystem&&P.Share)){toast('앱을 새로 만들어야 저장·공유가 돼요. 안내서의 "홍보 탭" 부분을 확인해 주세요');return}
-      const f='kkotgil-card-'+Date.now()+'.png',r=await P.Filesystem.writeFile({path:f,data:await b64Of(b),directory:'CACHE'}),o={title:nm+' 입양 홍보카드',files:[r.uri],dialogTitle:'입양 카드 공유하기'};
-      if(full)o.text='입양 문의: '+full;
-      await P.Share.share(o);return}
-    const file=new File([b],nm.replace(/[\\\/:*?"<>|]/g,'')+'-입양카드.png',{type:'image/png'});
-    if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)&&navigator.canShare&&navigator.canShare({files:[file]})){
-      try{const o={files:[file],title:nm+' 입양 홍보카드'};if(full)o.text='입양 문의: '+full;await navigator.share(o);return}catch(e){if(e&&e.name==='AbortError')return}}
-    const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=file.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),8000);
-    toast('이미지를 저장했어요. 안 보이면 "크게 보기"에서 이미지를 길게 눌러 저장해 보세요')
-  }catch(e){if(/cancel|abort|dismiss/i.test([e&&e.name,e&&e.message,e].join(' ')))return;toast('저장·공유하지 못했어요. 다시 눌러 주세요')}}
+    const x=await prep();if(!x)return;
+    const e=env();
+    if(e.native){
+      if(!(e.P.Filesystem&&e.P.Share)){say('앱을 새로 만들어야 공유가 돼요. 안내서의 "홍보 탭" 부분을 확인해 주세요',4500);return}
+      await nativeShare(x,e.P);return}
+    const file=new File([x.b],x.fn,{type:'image/png'});
+    if(e.phone&&navigator.canShare&&navigator.canShare({files:[file]})){
+      try{const o={files:[file],title:x.nm+' 입양 홍보카드'};if(x.full)o.text='입양 문의: '+x.full;await navigator.share(o);return}catch(err){if(err&&err.name==='AbortError')return}}
+    download(x);say('공유창을 열 수 없어서 이미지 파일로 저장했어요',3500)
+  }catch(err){if(gone(err)){hush();return}say('공유하지 못했어요. 다시 눌러 주세요')}}
+
+/* [갤러리에 저장] 앱: 갤러리 앨범 / 인터넷 화면: 다운로드 폴더 */
+async function gallery(){
+  if(busy)return;
+  const e=env();
+  if(e.ios&&!e.native)return share();  /* 아이폰 인터넷 화면: 공유창의 "이미지 저장"이 사진 앱에 저장해 줘요 */
+  busy=true;
+  try{
+    const x=await prep();if(!x)return;
+    if(e.native){
+      if(!e.P.Media){
+        if(e.P.Filesystem&&e.P.Share){say('이 앱에는 갤러리 저장 기능이 아직 없어서 공유창을 열어요. 앱을 새로 만들면 바로 저장돼요',4500);await nativeShare(x,e.P)}
+        else say('앱을 새로 만들어야 저장이 돼요. 안내서의 "홍보 탭" 부분을 확인해 주세요',4500);
+        return}
+      say('갤러리에 저장하는 중이에요…',30000);
+      await toAlbum(x,e.P.Media);
+      say('갤러리에 저장했어요 · "'+ALBUM+'" 앨범에서 볼 수 있어요',4500);return}
+    download(x);
+    say(e.phone?'저장했어요 · 갤러리의 "다운로드" 앨범에서 볼 수 있어요':'이미지를 저장했어요 (다운로드 폴더)',4500)
+  }catch(err){
+    if(gone(err)){hush();return}
+    const why=String(err&&(err.code||err.message)||'').replace(/\s+/g,' ').slice(0,40);
+    say('갤러리에 저장하지 못했어요'+(why?' ('+why+')':'')+'. "공유하기"로 저장해 보세요',5500)
+  }finally{busy=false}}
+
 async function big(){
   try{const b=await ready();if(!b){toast('카드를 만들지 못했어요. 다시 눌러 주세요');return}
     if(bigU)URL.revokeObjectURL(bigU);bigU=URL.createObjectURL(b);
     sh('카드 크게 보기','<img src="'+bigU+'" alt="입양 홍보카드" style="width:100%;height:auto;display:block;border-radius:12px"><p class="small" style="margin-top:8px">인터넷 화면에서는 이미지를 길게 누르면 저장할 수 있어요.</p>')
   }catch(e){toast('카드를 열지 못했어요. 다시 눌러 주세요')}}
-window.prSave=save;window.prBig=big;
+window.prGal=gallery;window.prShare=share;window.prBig=big;
 window.prDbg={model:model,render:render};
 refresh();
 })();
