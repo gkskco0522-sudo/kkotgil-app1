@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
     paths: ['.github/workflows/android.yml']
+# 앱이 다 만들어지면 "다운로드 주소"(Releases)를 저절로 만들고 고치려고 필요해요.
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,6 +22,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Check signing key
+        run: |
+          if [ ! -f signing/debug.keystore ]; then
+            echo "::error::signing/debug.keystore 파일이 저장소에 없어요. signing 폴더(안의 debug.keystore 포함)를 올렸는지 확인해 주세요."
+            exit 1
+          fi
+          keytool -list -keystore signing/debug.keystore -storepass android -alias androiddebugkey
       - name: Install
         run: |
           npm install
@@ -87,6 +97,63 @@ jobs:
               open(p, 'w', encoding='utf-8').write(s)
           PY
           grep -n -B3 -A3 'android:scheme="kkotgil"' android/app/src/main/AndroidManifest.xml
+      # 매번 같은 열쇠로 서명해야 새 앱이 옛 앱 위에 덮어 설치돼요.
+      - name: Use fixed signing key
+        run: |
+          mkdir -p "$HOME/.android"
+          cp signing/debug.keystore "$HOME/.android/debug.keystore"
+          if [ -n "$ANDROID_USER_HOME" ]; then
+            mkdir -p "$ANDROID_USER_HOME"
+            cp signing/debug.keystore "$ANDROID_USER_HOME/debug.keystore"
+          fi
+          ls -l "$HOME/.android"
+      # 앱 만드는 설정(Gradle)에도 같은 열쇠 위치를 직접 적어 둬요. (위의 방법이 안 먹혀도 되도록 이중으로)
+      - name: Pin signing key in Gradle
+        run: |
+          python3 - <<'PY'
+          import os, re
+          p = 'android/app/build.gradle'
+          s = open(p, encoding='utf-8').read()
+          ks = os.path.abspath('signing/debug.keystore').replace('\\', '/')
+          block = (
+              "    signingConfigs {\n"
+              "        debug {\n"
+              "            storeFile file('" + ks + "')\n"
+              "            storePassword 'android'\n"
+              "            keyAlias 'androiddebugkey'\n"
+              "            keyPassword 'android'\n"
+              "        }\n"
+              "    }\n"
+          )
+          m = re.search(r'^android\s*\{[ \t]*\n', s, re.M)
+          if 'signingConfigs' in s:
+              print('already added')
+          elif not m:
+              print('::warning::build.gradle 에서 android 칸을 찾지 못했어요. 기본 위치의 열쇠를 써요.')
+          else:
+              open(p, 'w', encoding='utf-8').write(s[:m.end()] + block + s[m.end():])
+              print('고정 열쇠를 Gradle 에 지정했어요:', ks)
+          PY
+          sed -n '1,14p' android/app/build.gradle
+      # 만들 때마다 버전 번호가 하나씩 커지게 해요. (덮어 설치할 때 필요해요)
+      - name: Set app version
+        env:
+          RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          python3 - <<'PY'
+          import os, re
+          p = 'android/app/build.gradle'
+          s = open(p, encoding='utf-8').read()
+          n = os.environ['RUN_NUMBER']
+          s, a = re.subn(r'versionCode\s+\d+', 'versionCode ' + n, s, count=1)
+          s, b = re.subn(r'versionName\s+"[^"]*"', 'versionName "1.0.' + n + '"', s, count=1)
+          if a != 1 or b != 1:
+              print('::warning::버전 번호를 바꾸지 못했어요. 앱은 그대로 만들어져요. (versionCode %d, versionName %d)' % (a, b))
+          else:
+              open(p, 'w', encoding='utf-8').write(s)
+              print('versionCode =', n, '/ versionName = 1.0.' + n)
+          PY
+          grep -n -E "versionCode|versionName" android/app/build.gradle || true
       - name: Build APK
         working-directory: android
         run: |
@@ -96,3 +163,61 @@ jobs:
         with:
           name: kkotgil-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+      # 만든 앱이 고정 열쇠로 서명됐는지 확인해요. (다르면 여기서 멈춰요)
+      - name: Check signature
+        run: |
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          WANT=$(keytool -list -v -keystore signing/debug.keystore -storepass android | awk '/SHA256:/ {print $2; exit}' | tr -d ':' | tr 'A-F' 'a-f')
+          echo "고정 열쇠의 지문(SHA-256): $WANT"
+          SIGNER=$(find "$ANDROID_HOME" "$ANDROID_SDK_ROOT" /usr/local/lib/android/sdk -maxdepth 3 -path '*/build-tools/*/apksigner' 2>/dev/null | sort -V | tail -1)
+          if [ -z "$SIGNER" ]; then
+            echo "::warning::apksigner 를 찾지 못해서 서명 확인은 건너뛰어요."
+            exit 0
+          fi
+          GOT=$("$SIGNER" verify --print-certs "$APK" | awk '/certificate SHA-256 digest/ {print $NF; exit}' | tr 'A-F' 'a-f')
+          echo "앱에 찍힌 지문(SHA-256): $GOT"
+          if [ -z "$GOT" ]; then
+            echo "::warning::앱의 서명 지문을 읽지 못해서 확인은 건너뛰어요."
+            exit 0
+          fi
+          if [ "$WANT" != "$GOT" ]; then
+            echo "::error::앱이 고정 열쇠로 서명되지 않았어요. 이대로 보내면 새 버전이 옛 앱 위에 설치되지 않을 수 있어요."
+            exit 1
+          fi
+          echo "FINGERPRINT=$WANT" >> "$GITHUB_ENV"
+          echo "서명 확인 완료"
+      # 앱 파일을 Releases 에 올려요. 주소가 늘 같아서, 이 주소만 알려 주면 돼요.
+      - name: Publish download link
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk kkotgil.apk
+          OWNER="${GITHUB_REPOSITORY_OWNER}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          PAGE="https://${OWNER}.github.io/${REPO}/install.html"
+          FILE="https://github.com/${GITHUB_REPOSITORY}/releases/download/test-apk/kkotgil.apk"
+          {
+            echo "테스트용 안드로이드 앱 파일(kkotgil.apk)이에요."
+            echo "설치 방법은 안내 페이지에 있어요: ${PAGE}"
+            echo ""
+            echo "- 만든 시각: $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M') (한국 시간)"
+            echo "- 만든 번호: ${RUN_NUMBER}번"
+            echo "- 서명 지문(SHA-256): ${FINGERPRINT:-확인 못 함}"
+          } > release-notes.md
+          TITLE="너의 꽃길 테스트 앱 (자동 업데이트)"
+          if gh release view test-apk > /dev/null 2>&1; then
+            gh release upload test-apk kkotgil.apk --clobber
+            gh release edit test-apk --title "$TITLE" --notes-file release-notes.md
+          else
+            gh release create test-apk kkotgil.apk --target "$GITHUB_SHA" --title "$TITLE" --notes-file release-notes.md
+          fi
+          {
+            echo "### 앱을 만들었어요"
+            echo ""
+            echo "- 받는 사람에게 보낼 주소: ${PAGE}"
+            echo "- 앱 파일 주소: ${FILE}"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "받는 사람에게 보낼 주소: ${PAGE}"
+          echo "앱 파일 주소: ${FILE}"
