@@ -66,6 +66,14 @@ html[data-theme="dark"] .lgb img{background:#fff;border-radius:16px;padding:6px 
 .dc:disabled{opacity:.55;cursor:default}
 .prbtns{display:flex;gap:8px;margin-top:8px}.prbtns .btn{flex:1;min-width:0;background:var(--p-lav2)}
 .prhint{margin:10px 2px 0}
+.ntr{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}.ntr:first-child{border-top:0}
+.nti{flex:none;width:24px;text-align:center;font-size:16px}.ntt{flex:1;min-width:0;line-height:1.5;font-size:14px;word-break:keep-all}.ntt .small{display:inline-block;margin-top:2px}.ntr .btn.s{flex:none}
+.ntg{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}.ntl{margin:8px 0 0;padding-left:20px;font-size:14px;line-height:1.7;word-break:keep-all}.ntl li{margin-bottom:8px}
+.tr{text-align:center;padding:4px 2px 0}.tr .te{font-size:48px;line-height:1.25}.tr h3{margin:6px 0 8px;font-size:20px}.tr p{margin:0;line-height:1.75;font-size:15px;word-break:keep-all;text-align:left}
+.td{display:flex;gap:7px;justify-content:center;margin:16px 0 14px}.td i{width:8px;height:8px;border-radius:99px;background:var(--inbd)}.td i.on{width:22px;background:var(--bar)}
+.smw{background:var(--in);border:1px solid var(--inbd);border-radius:14px;padding:10px;display:flex;justify-content:center;align-items:center;min-height:96px}
+.smw img{display:block;max-width:100%;max-height:46vh;width:auto;height:auto;border-radius:8px;cursor:zoom-in;box-shadow:0 2px 12px rgba(31,42,92,.18)}
+@media (max-height:640px){.smw img{max-height:30vh}}
 </style><link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#CFE0FF">
@@ -87,16 +95,19 @@ html[data-theme="dark"] .lgb img{background:#fff;border-radius:16px;padding:6px 
 <div id="hv" style="display:none"><div class="card"><div class="row" style="border:0;padding-top:0"><b>접종 · 구충 기록</b><button class="btn s" onclick="vsheet()">접종 추가</button></div><div id="vlist"></div></div></div></section>
 <section id="med" class="page"><div class="card" style="background:var(--p-lav2)"><div class="row" style="border:0;padding-top:0"><b>오늘 복용</b><button class="btn s" onclick="msheet()">약 추가</button></div><div id="mtoday"></div></div><div class="card"><div id="mlist"></div></div></section>
 <section id="pet" class="page"><button class="back" onclick="go('home')">홈으로</button><h2>아이 정보</h2><div class="card"><label>종류</label><div style="display:flex;gap:8px;margin:5px 0 12px"><button type="button" class="dc" id="ic1" onclick="setIc('🐶')">강아지</button><button type="button" class="dc" id="ic2" onclick="setIc('🐱')">고양이</button></div><label>홈 화면 색상</label><div id="cbox" class="chips"></div><label for="name">이름</label><input id="name" maxlength="20"><label for="sx">성별</label><select id="sx"><option value="">선택 안 함</option><option>남아</option><option>여아</option></select><label for="nu">중성화 여부</label><select id="nu"><option value="">선택 안 함</option><option value="완료">중성화 했어요</option><option value="미완료">아직 안 했어요</option></select><label for="ag">추정 나이</label><input id="ag"><label for="rn">동물등록번호</label><input id="rn" inputmode="numeric" maxlength="20" placeholder="15자리 숫자 (선택)"><label for="ct">칩 종류</label><select id="ct"><option value="">선택 안 함</option><option>내장칩</option><option>외장칩</option></select><label for="cd">칩 이식 날짜</label><input type="date" id="cd"><label for="nt">성격 / 주의사항</label><textarea id="nt" rows="4"></textarea><label>사진</label><input type="file" accept="image/*" onchange="photo(event)"><button onclick="savePet()">저장하기</button><button id="rm" class="x" style="margin-top:12px;display:block" onclick="rmDog()">이 아이 삭제</button></div>
+<div class="card"><b>요약 한 장</b><p>병원에 갈 때나 새 가족에게 보낼 때 쓰세요. 접종·약·체중·병원 기록을 그림 한 장으로 모아 줘요. ‘저장하기’를 누른 내용으로 만들어져요.</p><button class="btn" onclick="sumOpen()">요약 한 장 만들기</button></div>
 </section>
 <section id="set" class="page"><button class="back" onclick="go('home')">홈으로</button><h2>설정</h2>
 <div class="card" id="acct" style="display:none"></div>
-<div class="card"><b>공유 코드 만들기</b><p id="shint">아이 정보를 다른 사람에게 보내는 코드예요. 받은 사람이 아래 '공유 코드로 아이 추가'에 붙여넣으면 돼요. 사진은 포함되지 않아요.</p><label for="spet">아이</label><select id="spet"></select><label style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" id="sinc" style="width:auto;margin:0"> 기록도 함께 보내기 (접종·체중·약·일상 기록)</label><button class="btn" style="margin-top:10px" onclick="mkCode()">코드 만들고 복사하기</button><textarea id="sct" rows="3" readonly style="margin-top:10px" placeholder="코드가 여기에 나타나요"></textarea><div style="display:flex;gap:10px;align-items:center"><button onclick="cpCode()">복사</button><span class="small" id="slen"></span></div><p class="small" id="shnote" style="display:none">숫자 코드를 만들면 아이 정보가 서버에 24시간 동안 임시로 보관돼요. 받은 사람이 불러오면 바로 지워져요.</p></div>
+<div class="card"><b>공유 코드 만들기</b><p id="shint">아이 정보를 다른 사람에게 보내는 코드예요. 받은 사람이 아래 '공유 코드로 아이 추가'에 붙여넣으면 돼요. 사진은 포함되지 않아요.</p><label for="spet">아이</label><select id="spet"></select><label style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" id="sinc" style="width:auto;margin:0"> 기록도 함께 보내기 (접종·체중·약·일상 기록)</label><button class="btn" style="margin-top:10px" onclick="mkCode()">코드 만들고 복사하기</button><textarea id="sct" rows="3" readonly style="margin-top:10px" placeholder="코드가 여기에 나타나요"></textarea><div class="row2"><button onclick="cpCode()">복사</button><button onclick="shareCode()">공유하기</button></div><p class="small" id="slen" style="margin:8px 0 0"></p><p class="small" id="shnote" style="display:none">숫자 코드를 만들면 아이 정보가 서버에 24시간 동안 임시로 보관돼요. 받은 사람이 불러오면 바로 지워져요.</p></div>
 <div class="card"><b>공유 코드로 아이 추가</b><p>받은 코드를 입력하거나 붙여넣으면 그 아이의 정보가 이 기기에 추가돼요. 같은 아이를 다시 불러오면 최신 내용으로 덮어써요.</p><textarea id="imc" rows="2" placeholder="공유 코드 붙여넣기" autocomplete="off"></textarea><button onclick="impCode()">아이 불러오기</button><p class="small" id="imnote" style="display:none;margin-bottom:0">숫자 코드는 만든 뒤 24시간 안에, 한 번만 쓸 수 있어요.</p></div>
 <div class="card"><b>화면 모드</b><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="dc" id="th_light" onclick="setTh('light')">라이트</button><button class="dc" id="th_dark" onclick="setTh('dark')">다크</button><button class="dc" id="th_auto" onclick="setTh('auto')">기기 설정</button></div></div>
 <details class="card"><summary><b>알람 소리</b> <span class="small" id="snow"></span></summary><p>안드로이드 앱에서 약·접종 알림이 울릴 때 나는 소리예요. 웹에서는 미리듣기만 돼요.</p><div id="sbox2" style="margin-top:10px"></div></details>
+<details class="card" id="ntf" style="display:none" ontoggle="if(this.open)ntfRefresh()"><summary><b>알림 점검</b> <span class="small" id="ntfs"></span></summary><p>약·접종 알림이 제때 울리는지 확인해요. 폰의 절전 기능 때문에 알림이 늦거나 안 울릴 수 있어요.</p><div id="ntfb"></div><button class="btn" id="ntft" style="margin-top:12px" onclick="ntfTest()">테스트 알림 보내기 (10초 뒤)</button><p class="small" id="ntfm" role="status" aria-live="polite" style="margin:8px 0 0"></p><details class="ntg"><summary><b>알림이 안 울릴 때 확인할 것</b></summary><ol class="ntl"><li>위 점검 항목이 모두 ✅인지 확인해요.</li><li><b>배터리 절전</b>이 앱을 잠재우면 알림이 늦거나 안 울릴 수 있어요. 폰 설정 → 앱 → 너의 꽃길 → 배터리에서 “제한 없음”(또는 “최적화 안 함”)을 골라 주세요. 삼성 폰은 설정 → 배터리 → 백그라운드 사용 제한에서 “절전 상태 앱” 목록에 너의 꽃길이 있으면 빼 주세요. (폰마다 메뉴 이름이 조금씩 달라요.)</li><li><b>무음·방해 금지 모드</b>이거나 알림 음량이 0이면 소리가 나지 않아요.</li><li>설정에서 앱을 <b>강제 종료</b>하면 예약된 알림이 지워져요. 앱을 한 번 열면 다시 예약돼요.</li></ol></details></details>
 <div class="card" style="background:var(--p-lav2)"><b>백업 · 복원</b><p>기록은 이 기기에 저장돼요. (구글 계정으로 로그인하면 내 계정에도 저장돼요.) 백업 내용을 복사해 메모 등에 보관해 두면, 나중에 아래 칸에 붙여넣어 복원할 수 있어요.</p><textarea id="bkt" rows="4" placeholder="백업 내용이 여기에 나타나요. 복원할 때는 여기에 붙여넣으세요."></textarea><div class="row2"><button onclick="bk()">백업 내용 만들기</button><button onclick="rs()">이 내용으로 복원</button></div></div>
 <div class="card"><b>데이터 삭제</b><p>모든 아이와 기록, 체중, 접종, 약 정보를 지워요. 되돌릴 수 없어요.<span id="wipenote"></span></p><button id="wipe" class="x" style="background:var(--p-wipe);color:var(--warn);border-radius:12px;padding:12px 14px;font-size:14px" onclick="wipeAll()">모든 기록 삭제</button></div>
-<div class="card"><b>앱 정보</b><p>너의 꽃길 · 아이들의 기록장<br>글씨체: 고운바탕<br>앱 버전: 2026.10.29 (홍보 카드 · 갤러리 저장)</p></div></section>
+<div class="card"><b>도움말 · 의견</b><p>처음 쓰시는 분을 위한 사용법을 다시 볼 수 있어요. 불편한 점이나 바라는 점도 보내 주세요.</p><div class="row2" id="hlr"><button onclick="tourOpen()">사용법 보기</button><button id="fbb" onclick="fbSend()">의견 보내기</button></div><p class="small" id="fbn" style="display:none;margin:10px 0 0"></p></div>
+<div class="card"><b>앱 정보</b><p>너의 꽃길 · 아이들의 기록장<br>글씨체: 고운바탕<br>앱 버전: <span id="appver">웹 · 2026.10.29</span></p></div></section>
 <section id="promo" class="page"><h2>입양 홍보카드</h2>
 <p>임보 기록으로 입양 홍보 그림을 만들어요. 전화번호·동물등록번호·집 주소는 카드에 넣지 않아요.</p>
 <div id="pdogs" class="strip"></div>
@@ -250,6 +261,7 @@ function api(path,body){return new Promise(res=>{
     .then(r=>r.json().then(j=>({ok:r.ok,s:r.status,j:j}),()=>({ok:r.ok,s:r.status,j:{}})))
     .then(fin,()=>fin(bad))}catch(e){fin(bad)}})}
 function mkCode(){if(shBusy)return;let c;try{c=kgPayload()}catch(e){toast('코드를 만들지 못했어요');return}
+  scFor=smCl((dogs.find(x=>String(x.id)===$('spet').value)||D()||{}).name)||'아이';
   const put=(v,num)=>{const t=$('sct');t.value=v;t.rows=num?1:3;t.classList.toggle('big',!!num);$('slen').textContent=num?'24시간 안에 한 번만 쓸 수 있어요':v.length+'자'};
   const done='코드를 만들고 복사했어요',hint='코드를 만들었어요. 복사 버튼을 눌러 주세요';
   if(!SRV()){put(c,false);cpCode(done,hint);return}
@@ -307,7 +319,7 @@ const TC={식사:'var(--p-peach)',물:'var(--p-sun)',배변:'var(--p-mint)',약:
 const pill=t=>'<span class="pill" style="background:'+(TC[t]||'var(--p-grey)')+'">'+esc(t)+'</span>';
 let rt='식사';
 logs.forEach((x,i)=>{if(!x.id)x.id=Date.now()+i});
-function go(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));$(id).classList.add('on');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('sel',b.dataset.p===id));$('menu').classList.toggle('on',id==='set');document.body.dataset.pg=id;scrollTo(0,0);if(id==='set')kgUi();if(id==='promo'&&window.prShow)prShow()}
+function go(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));$(id).classList.add('on');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('sel',b.dataset.p===id));$('menu').classList.toggle('on',id==='set');document.body.dataset.pg=id;scrollTo(0,0);if(id==='set'){kgUi();ntfRefresh();fbUi();verUi()}if(id==='promo'&&window.prShow)prShow()}
 function sh(t,b){$('sbox').innerHTML='<div class="row" style="border:0;padding:0 0 10px"><b style="font-size:18px">'+t+'</b><button class="ib" onclick="cs()" aria-label="닫기">닫기</button></div>'+b;$('sh').classList.add('on')}
 function cs(){$('sh').classList.remove('on');if(kgAskRes){const r=kgAskRes;kgAskRes=null;r(-1)}}
 function rec(t,d){rt=t||'식사';sh('기록 추가','<div class="chips" id="rtc"></div><div id="amtbox"><label class="l">먹은 양 (g)</label><div class="chips" id="amc"></div><input type="number" id="amt" inputmode="numeric" min="0" placeholder="직접 입력"></div><label class="l" for="memo">메모 (선택)</label><input id="memo" maxlength="100" placeholder="예: 산책 30분, 사료 한 컵"><label class="l" for="rd">날짜</label><input type="date" id="rd" value="'+(d||today())+'"><button class="btn" onclick="saveRec()">저장</button>');rtd()}
@@ -385,7 +397,7 @@ function kgReq(method,path,body,o){o=o||{};return new Promise(res=>{
 
 /* 화면 */
 function kgMsg(t){kgM=t||'';kgUi();if(t)toast(t)}
-function kgShow(on){document.documentElement.classList.toggle('lgon',!!on);const a=document.querySelector('.app');if(a)a.inert=!!on}
+function kgShow(on){document.documentElement.classList.toggle('lgon',!!on);const a=document.querySelector('.app');if(a)a.inert=!!on;if(!on)setTimeout(()=>tourAuto(0),900)}
 function kgSkip(){kgShow(false)}
 function kgAgo(t){const m=Math.floor((Date.now()-t)/6e4);return m<1?'방금 전':m<60?m+'분 전':m<1440?Math.floor(m/60)+'시간 전':new Date(t).toLocaleDateString('ko-KR')}
 function kgStatTxt(){
@@ -579,6 +591,383 @@ function kgInit(){
   setInterval(()=>{if(!document.hidden&&kgTok())kgSync('tick')},90000);
   document.addEventListener('visibilitychange',()=>{if(!kgTok())return;if(document.hidden){if(lsGet('kg_dirty'))kgSync('hide')}else kgSync('resume')});
   addEventListener('online',()=>kgSync('online'))}
+/* ───────── 알림 점검 (안드로이드 앱에서만 보여요) ─────────
+   폰 쪽 일은 native.js 의 window.__kkotgilNotif 가 해요. 웹에서는 카드를 숨겨요. */
+const NTF=()=>window.__kkotgilNotif||null;
+let ntfSeq=0,ntfLock=0;
+function ntfNative(){const C=window.Capacitor;return !!(C&&C.isNativePlatform&&C.isNativePlatform()&&NTF())}
+function ntfRow(ok,name,txt,btn){return '<div class="ntr"><span class="nti" aria-hidden="true">'+(ok?'✅':'⚠️')+'</span><span class="ntt"><b>'+name+'</b><br><span class="small">'+txt+'</span></span>'+(btn||'')+'</div>'}
+async function ntfRefresh(){
+  const box=$('ntf');if(!box)return;
+  if(!ntfNative()){box.style.display='none';return}
+  box.style.display='';
+  const my=++ntfSeq,b=$('ntfb'),s=$('ntfs');
+  let r=null;try{r=await NTF().info()}catch(e){}
+  if(my!==ntfSeq)return;
+  if(!r){b.innerHTML='<p class="small">알림 상태를 읽지 못했어요. 앱을 다시 열어 주세요.</p>';s.textContent='';return}
+  const nm=esc(r.soundName||''),
+    on=r.perm==='granted'&&r.enabled!==false,ask=r.perm==='prompt'||r.perm==='prompt-with-rationale',
+    ex=r.exact==='granted',snd=r.importance==null||r.importance>=3,
+    okP=r.pending<0||!(r.expected>0&&r.pending===0),fix=r.pending>=0&&r.pending!==r.expected;
+  b.innerHTML=
+    ntfRow(on,'알림 허용',on?'켜져 있어요':ask?'아직 허용하지 않았어요':'꺼져 있어요. 폰 설정 → 앱 → 너의 꽃길 → 알림에서 켜 주세요',on||!ask?'':'<button class="btn s" onclick="ntfAsk()">허용하기</button>')+
+    ntfRow(ex,'정해진 시각에 울리기',ex?'허용돼 있어요':'꺼져 있어요. 알림이 몇 분 늦게 올 수 있어요',ex?'':'<button class="btn s" onclick="ntfExact()">설정 열기</button>')+
+    ntfRow(snd,'알람 소리',snd?'“'+nm+'” · 소리가 켜져 있어요':'“'+nm+'” 소리가 꺼져 있어요. 폰 설정 → 앱 → 너의 꽃길 → 알림 → “알람 소리: '+nm+'”에서 소리를 켜 주세요','')+
+    ntfRow(okP&&!fix,'예약된 알림',r.pending<0?'확인하지 못했어요':r.pending+'개 예약돼 있어요'+(fix?' (예정된 알림은 '+r.expected+'개예요)':''),okP&&!fix?'':'<button class="btn s" onclick="ntfResched()">다시 예약하기</button>');
+  s.textContent=[on,ex,snd,okP&&!fix].some(x=>!x)?'⚠️ 확인이 필요해요':'✅ 모두 정상이에요'}
+async function ntfAsk(){try{await NTF().ask()}catch(e){}ntfRefresh()}
+async function ntfExact(){try{await NTF().exact()}catch(e){}setTimeout(ntfRefresh,400)}
+async function ntfResched(){try{await NTF().resched()}catch(e){}ntfRefresh()}
+async function ntfTest(){
+  const n=NTF();if(!n||ntfLock)return;
+  ntfLock=1;const m=$('ntfm'),t=$('ntft');t.disabled=true;m.textContent='준비하는 중이에요…';
+  let r={ok:false,why:'error'};try{r=await n.test()}catch(e){}
+  if(r.ok){m.textContent='10초 뒤에 알림이 와요. 앱을 닫거나 화면을 꺼도 괜찮아요. 오지 않으면 아래 “알림이 안 울릴 때 확인할 것”을 봐 주세요.';setTimeout(()=>{t.disabled=false;ntfLock=0},11000)}
+  else{m.textContent=r.why==='perm'?'알림 허용이 꺼져 있어서 보낼 수 없어요. 위의 “알림 허용”을 먼저 켜 주세요.':'테스트 알림을 보내지 못했어요. 앱을 다시 열고 해 보세요.';t.disabled=false;ntfLock=0}
+  ntfRefresh()}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&$('set')&&$('set').classList.contains('on'))ntfRefresh()});
+/* ───────── 사용법 안내 · 의견 보내기 · 앱 버전 ───────── */
+const TOUR=[
+ ['🐾','기록은 홈에서 바로','홈의 큰 버튼(식사·물·배변·행동·병원·메모)을 눌러 오늘 있었던 일을 남겨요. 남긴 기록은 아래 ‘달력’에서 날짜별로 볼 수 있어요.'],
+ ['💊','건강과 약 알림','‘건강’ 탭에서 체중 그래프와 접종·구충 일정을 관리해요. ‘약’ 탭에 먹일 시간을 적어 두면 그 시간에 알림이 울려요. (알림은 안드로이드 앱에서 울려요)'],
+ ['🏷️','아이 정보','‘아이’ 탭에서 사진, 동물등록번호, 성격 메모를 적어요. 병원이나 새 가족에게 보여 줄 ‘요약 한 장’도 여기서 만들 수 있어요.'],
+ ['💌','입양 보낼 때','‘홍보’ 탭에서 입양 홍보카드를 만들어 카톡·인스타로 바로 보내요. 오른쪽 위 톱니바퀴(설정)의 ‘공유 코드’로는 아이 정보를 다른 사람에게 보낼 수 있어요.'],
+ ['🔒','기록을 안전하게','설정에서 구글 계정으로 로그인하면 기록이 계정에도 저장돼서 폰을 바꿔도 이어서 쓸 수 있어요. 알림이 안 울리면 설정의 ‘알림 점검’을 확인해 보세요.']
+];
+let tourI=0;
+function tourOpen(i){
+  tourI=Math.max(0,Math.min(TOUR.length-1,i|0));const s=TOUR[tourI],last=tourI===TOUR.length-1,G=' style="background:var(--p-grey)"';
+  sh('사용법 '+(tourI+1)+' / '+TOUR.length,
+    '<div class="tr"><div class="te" aria-hidden="true">'+s[0]+'</div><h3>'+esc(s[1])+'</h3><p>'+esc(s[2])+'</p></div>'+
+    '<div class="td" aria-hidden="true">'+TOUR.map((_,k)=>'<i'+(k===tourI?' class="on"':'')+'></i>').join('')+'</div>'+
+    '<div class="row2">'+(tourI?'<button class="btn"'+G+' onclick="tourOpen('+(tourI-1)+')">이전</button>':'<button class="btn"'+G+' onclick="cs()">건너뛰기</button>')+
+    (last?'<button class="btn" onclick="cs()">시작하기</button>':'<button class="btn" onclick="tourOpen('+(tourI+1)+')">다음</button>')+'</div>')}
+/* 처음 쓰는 사람에게만 한 번 보여 줘요. 이미 기록이 있으면(폰을 바꿔 복원한 경우 등) 조용히 넘어가요 */
+function tourAuto(n){
+  n=n||0;
+  if(lsGet('kg_tour'))return;
+  if(document.documentElement.classList.contains('lgon'))return;
+  if(kgBusy&&n<20){setTimeout(()=>tourAuto(n+1),400);return}
+  if($('sh').classList.contains('on'))return;
+  lsSet('kg_tour','1');
+  let fresh=false;try{fresh=kgPristine(kgCopy())}catch(e){}
+  if(fresh)tourOpen(0)}
+/* 의견 보낼 곳은 config.js 의 KG_FEEDBACK (메일 주소 또는 https 주소). 비워 두면 버튼이 안 보여요 */
+const FB=()=>String(window.KG_FEEDBACK||'').trim();
+const fbMail=()=>FB().replace(/^mailto:/i,'').split('?')[0];
+function fbKind(){const v=FB();if(!v)return '';if(/^https?:\/\//i.test(v))return 'url';return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fbMail())?'mail':''}
+function fbUi(){
+  const k=fbKind(),b=$('fbb'),n=$('fbn'),r=$('hlr');if(!b)return;
+  b.style.display=k?'':'none';r.style.gridTemplateColumns=k?'':'1fr';
+  if(k==='mail'){n.style.display='';n.textContent='메일 앱이 열리지 않으면 '+fbMail()+' 로 보내 주세요.'}else n.style.display='none'}
+async function appVer(){
+  try{const A=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.App;if(kgNative()&&A&&A.getInfo){const i=await A.getInfo();if(i&&i.version)return i.version+(i.build?' (빌드 '+i.build+')':'')}}catch(e){}
+  return ''}
+async function verUi(){const e=$('appver'),v=await appVer();if(e&&v)e.textContent=v}
+function kgGo(u){if(/^https?:/i.test(u))window.open(u,'_blank','noopener');else location.href=u}
+async function fbOpen(url){
+  try{
+    if(kgNative()){
+      const P=(window.Capacitor&&Capacitor.Plugins)||{};
+      if(/^https?:/i.test(url)&&P.Browser&&P.Browser.open){await P.Browser.open({url});return}
+      if(P.App&&P.App.openUrl){const r=await P.App.openUrl({url});if(!r||r.completed!==false)return}
+    }
+  }catch(e){}
+  kgGo(url)}
+async function fbSend(){
+  const k=fbKind();if(!k){toast('의견 보낼 곳이 아직 정해지지 않았어요');return}
+  if(k==='url'){fbOpen(FB());return}
+  const v=await appVer(),os=/Android ([\d.]+)/.exec(navigator.userAgent),
+    body='\n\n\n----------\n위에 불편했던 점이나 바라는 점을 적어 주세요. 아래 줄은 문제를 찾는 데 쓰여요.\n'+(v?'앱 '+v:'웹')+(os?' · 안드로이드 '+os[1]:'')+'\n';
+  fbOpen('mailto:'+fbMail()+'?subject='+encodeURIComponent('[너의 꽃길] 의견 보내기')+'&body='+encodeURIComponent(body))}
+/* ───────── 공유 코드 바로 보내기 · 요약 한 장 ───────── */
+let scFor='';
+const shGone=e=>/cancel|abort|dismiss/i.test([e&&e.name,e&&e.message,e].join(' '));
+/* 글자를 휴대폰 공유창(카톡·메시지 등)으로 보내요. 공유창을 쓸 수 없으면 복사해 둬요 */
+async function shareText(title,text){
+  try{
+    const P=(window.Capacitor&&Capacitor.Plugins)||{};
+    if(kgNative()&&P.Share&&P.Share.share){await P.Share.share({title:title,text:text,dialogTitle:title});return 'shared'}
+    if(navigator.share){await navigator.share({title:title,text:text});return 'shared'}
+  }catch(e){if(shGone(e))return 'cancel'}
+  try{if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(text);return 'copied'}}catch(e){}
+  try{const t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');t.style.cssText='position:fixed;left:-9999px;top:0;opacity:0';document.body.appendChild(t);t.select();const ok=document.execCommand('copy');t.remove();if(ok)return 'copied'}catch(e){}
+  return 'fail'}
+async function shareCode(){
+  const v=$('sct').value.trim();
+  if(!v){toast('먼저 코드를 만들어 주세요');return}
+  const nm=scFor||'아이',num=/^\d{4} \d{4}$/.test(v),app=String(window.KG_APPLINK||'').trim(),
+    how='너의 꽃길 앱 → 오른쪽 위 톱니바퀴(설정) → ‘공유 코드로 아이 추가’',
+    msg=['[너의 꽃길] ‘'+nm+'’ 정보를 보내요 🐾',''].concat(num
+      ?['공유 코드: '+v,'(24시간 안에, 한 번만 쓸 수 있어요)','','받는 방법: '+how+'에 숫자를 넣고 ‘아이 불러오기’를 눌러 주세요.']
+      :['받는 방법: '+how+'에 아래 글자를 전부 붙여넣고 ‘아이 불러오기’를 눌러 주세요.','',v]);
+  if(app)msg.push('','앱이 없다면: '+app);
+  const r=await shareText('너의 꽃길 · '+nm,msg.join('\n'));
+  if(r==='copied')toast('공유창을 열 수 없어서 안내 글을 복사했어요');
+  else if(r==='fail')toast('공유하지 못했어요. 복사 버튼을 눌러 직접 보내 주세요')}
+
+/* ── 요약 한 장: 병원이나 새 가족에게 보여 주는 그림 한 장 (너비 1080, 내용만큼 길어져요) ── */
+const SMK=[['n','성격·주의사항'],['v','접종·구충'],['m','복용 중인 약'],['w','체중'],['h','병원 기록'],['r','등록번호']];
+const SM={o:{n:1,v:1,m:1,w:1,h:1,r:0},seq:0,pend:null,blob:null,url:'',tt:0,busy:false};
+const SMW=1080,SMX=56,SMF='Jua,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif',SMI='#1F2A5C',SMS='#4A5688',SMA='#4558C8',SML='#E4E8FA',SMR='#D6455D';
+const smFont=z=>'400 '+z+'px '+SMF;
+const smCl=s=>String(s==null?'':s).replace(/\s+/g,' ').trim();
+const smDot=s=>String(s||'').replace(/-/g,'.');
+const smKg=k=>String(Math.round(k*100)/100);
+const smBy=(k,r)=>(a,b)=>r*String(a[k]||'').localeCompare(String(b[k]||''));
+
+/* 기록 → 그림에 들어갈 내용. 등록번호는 기본으로 빼 두고, 켠 경우에만 넣어요 */
+function smData(d){
+  const t=today(),id=d.id,
+    vv=vs.filter(x=>x.dog===id),
+    ww=ws.filter(x=>x.dog===id&&x.k>0&&x.d).sort(smBy('d',1)),
+    mm=meds.filter(x=>x.dog===id&&!(x.rp==='o'&&x.od&&x.od<t)).sort(smBy('h',1)),
+    hl=logs.filter(x=>x.dog===id&&x.type==='병원'&&x.d).sort((a,b)=>String(b.d).localeCompare(String(a.d))||(b.id||0)-(a.id||0));
+  const M={name:smCl(d.name)||'이름 없음',ic:d.ic==='🐱'?'🐱':'🐶',photo:d.photo||'',date:smDot(t)};
+  M.hue=d.hh==null||d.hh===''||isNaN(+d.hh)?'#CFE0FF':'hsl('+Math.round(+d.hh)+',75%,89%)';
+  M.sub=[d.ic==='🐱'?'고양이':'강아지',smCl(d.sex),smCl(d.age)].filter(Boolean).join(' · ');
+  const rn=smCl(d.rn),chip=[smCl(d.ct),d.cd?smDot(d.cd)+(d.ct==='외장칩'?' 장착':' 이식'):''].filter(Boolean).join(' · ');
+  M.pills=[d.nu==='완료'?'중성화 완료':d.nu==='미완료'?'중성화 전':'',chip,SM.o.r&&rn?'등록번호 '+rn:''].filter(Boolean);
+  const note=String(d.note||'').split(/\r?\n/).map(smCl).filter(Boolean);
+  /* 접종: 종류마다 가장 최근 접종일과 다음 예정일을 한 줄씩 */
+  const g={};vv.forEach(x=>{const k=x.t==='기타'?'기타:'+smCl(x.x):x.t;(g[k]=g[k]||[]).push(x)});
+  const vr=Object.keys(g).map(k=>{
+    const a=g[k],last=a.filter(x=>x.d&&x.d<=t).sort(smBy('d',-1))[0]||null,
+      up=a.filter(x=>x.n&&x.n>=t).sort(smBy('n',1))[0],late=!up&&last&&last.n&&last.n<t?last.n:'',
+      ty=a[0].t,memo=smCl((last||a[0]).x),oi=VT.indexOf(ty);
+    return{lab:ty==='기타'?(memo||'기타 접종'):ty+(memo?' · '+memo:''),d:last?last.d:'',n:up?up.n:late,late:!!late,o:ty==='종합백신'?-1:oi<0?99:oi}
+  }).filter(r=>r.d||r.n).sort((a,b)=>a.o-b.o||a.lab.localeCompare(b.lab));
+  const mr=mm.map(m=>({n:smCl(m.n)||'약',d:smCl(m.d),s:(m.rp==='o'?smDot(m.od)+' '+(m.h||'')+' 한 번':rlabel(m)+' '+(m.h||'')).trim()}));
+  M.has={n:note.length>0,v:vr.length>0,m:mr.length>0,w:ww.length>0,h:hl.length>0,r:!!rn};
+  const on=k=>M.has[k]&&!!SM.o[k],lw=ww[ww.length-1];
+  M.note=on('n')?note:null;
+  M.vacc=on('v')?{rows:vr.slice(0,10),more:Math.max(0,vr.length-10)}:null;
+  M.meds=on('m')?{rows:mr.slice(0,6),more:Math.max(0,mr.length-6)}:null;
+  M.weight=on('w')?{now:lw.k,d:smDot(lw.d),pts:ww.slice(-8).map(x=>({d:x.d,k:x.k}))}:null;
+  M.hosp=on('h')?hl.slice(0,3).map(x=>({d:smDot(x.d),m:smCl(x.memo)||'진료를 받았어요'})):null;
+  return M}
+
+/* 그리는 순서를 먼저 계산해서(높이를 알아야 하니까) 목록으로 만들고, 그 목록대로 그려요 */
+function smLayout(M,mc,img){
+  const ops=[],X=SMX,CW=SMW-2*X,IX=X+40,IW=CW-80;let y=0;
+  const put=o=>(ops.push(o),o),
+    meas=(z,s)=>{mc.font=smFont(z);return mc.measureText(s).width},
+    tx=(s,x,by,z,f,a)=>put({t:'x',s:s,x:x,y:by,z:z,f:f,a:a||'left'}),
+    sep=yy=>put({t:'l',x1:IX,x2:IX+IW,y:yy,s:SML,lw:2}),
+    clip=(z,s,w)=>{if(meas(z,s)<=w)return s;let u=s;while(u.length>1&&meas(z,u+'…')>w)u=u.slice(0,-1);return u+'…'},
+    wrap=(z,src,w,max)=>{
+      const out=[];
+      (Array.isArray(src)?src:[src]).forEach(p=>{
+        let line='';
+        smCl(p).split(' ').forEach(word=>{
+          if(!word)return;
+          const cand=line?line+' '+word:word;
+          if(meas(z,cand)<=w){line=cand;return}
+          if(line){out.push(line);line=''}
+          if(meas(z,word)<=w){line=word;return}
+          let cur='';
+          for(const ch of word){if(cur&&meas(z,cur+ch)>w){out.push(cur);cur=ch}else cur+=ch}
+          line=cur});
+        if(line)out.push(line)});
+      if(max&&out.length>max){out.length=max;out[max-1]=clip(z,out[max-1]+'…',w)}
+      return out};
+  const bg=put({t:'r',x:0,y:0,w:SMW,h:0,f:'#F3F5FF'}),hero=put({t:'r',x:0,y:0,w:SMW,h:0,f:M.hue});
+  /* 위쪽 띠: 사진 · 이름 · 기본 정보 */
+  const AV=220,AY=64,hx=X+AV+64,hw=SMW-X-hx,PH=52;
+  put({t:'a',x:X+8,y:AY,d:AV,img:img,e:M.ic});
+  let nz=80;while(nz>46&&meas(nz,M.name)>hw)nz-=2;
+  let hy=AY+80;tx(clip(nz,M.name,hw),hx,hy,nz,SMI);
+  if(M.sub){hy+=54;tx(clip(34,M.sub,hw),hx,hy,34,SMS)}
+  let px=hx,py=hy+30;
+  M.pills.forEach(s=>{const z=28,w=Math.min(hw,Math.ceil(meas(z,s))+44);
+    if(px>hx&&px+w>hx+hw){px=hx;py+=PH+14}
+    put({t:'r',x:px,y:py,w:w,h:PH,r:26,f:'rgba(255,255,255,.75)'});
+    tx(clip(z,s,w-44),px+22,py+PH/2+10,z,SMI);px+=w+14});
+  const hb=Math.max(AY+AV+8+64,(M.pills.length?py+PH:hy)+60);
+  hero.h=hb;y=hb+40;
+  /* 칸(카드) 하나: 제목 + 안쪽 내용. body 는 내용이 끝난 y 를 돌려줘요 */
+  const card=(title,body)=>{
+    const top=y,bgc=put({t:'r',x:X,y:top,w:CW,h:0,r:30,f:'#fff',s:SML,lw:2});
+    put({t:'c',x:IX+10,y:top+58,r:10,f:SMA});
+    tx(title,IX+34,top+72,40,SMI);
+    const end=body(top+110);
+    bgc.h=end+30-top;y=top+bgc.h+30};
+  const more=(cy,n)=>{sep(cy);tx('외 '+n+'건',IX,cy+40,28,SMS);return cy+62};
+  if(M.note)card('성격 · 주의사항',cy=>{
+    const L=wrap(32,M.note,IW,9);
+    L.forEach((s,j)=>tx(s,IX,cy+32+j*50,32,SMI));
+    return cy+L.length*50});
+  if(M.vacc)card('접종 · 구충',cy=>{
+    const dw=Math.ceil(meas(30,'2026.12.31')),tw=Math.ceil(meas(24,'지남'))+14,c3=IX+IW-dw-tw,c2=c3-dw-44,w1=c2-IX-30;
+    tx('종류',IX,cy+20,26,SMS);tx('접종일',c2,cy+20,26,SMS);tx('다음 예정',c3,cy+20,26,SMS);
+    cy+=36;sep(cy);
+    M.vacc.rows.forEach((r,i)=>{
+      const L=wrap(32,r.lab,w1,2);
+      if(i)sep(cy);
+      L.forEach((s,j)=>tx(s,IX,cy+40+j*42,32,SMI));
+      tx(r.d?smDot(r.d):'-',c2,cy+40,30,r.d?SMI:SMS);
+      if(r.n){const s=smDot(r.n);tx(s,c3,cy+40,30,r.late?SMR:SMI);if(r.late)tx('지남',c3+Math.ceil(meas(30,s))+12,cy+40,24,SMR)}
+      else tx('-',c3,cy+40,30,SMS);
+      cy+=20+L.length*42});
+    return M.vacc.more?more(cy,M.vacc.more):cy});
+  if(M.meds)card('복용 중인 약',cy=>{
+    M.meds.rows.forEach((m,i)=>{
+      const L1=wrap(32,m.n,IW,2),L2=wrap(28,(m.d?m.d+' · ':'')+m.s,IW,2);
+      if(i)sep(cy);
+      L1.forEach((s,j)=>tx(s,IX,cy+40+j*42,32,SMI));
+      L2.forEach((s,j)=>tx(s,IX,cy+40+(L1.length-1)*42+38+j*38,28,SMS));
+      cy+=24+L1.length*42+L2.length*38-4});
+    return M.meds.more?more(cy,M.meds.more):cy});
+  if(M.weight)card('체중',cy=>{
+    const W=M.weight,dec=Math.min(2,Math.max.apply(0,W.pts.map(p=>(smKg(p.k).split('.')[1]||'').length))),fk=k=>(Math.round(k*100)/100).toFixed(dec);
+    tx(fk(W.now)+'kg',IX,cy+58,72,SMA);tx(W.d+' 측정',IX+IW,cy+56,28,SMS,'right');cy+=92;
+    if(W.pts.length>1){
+      const n=W.pts.length,x0=IX+40,x1=IX+IW-40,top=cy+50,bot=cy+170;
+      let lo=Math.min.apply(0,W.pts.map(p=>p.k)),hi=Math.max.apply(0,W.pts.map(p=>p.k));
+      if(hi-lo<.2){lo-=.3;hi+=.3}
+      const gx=i=>x0+(x1-x0)*i/(n-1),gy=k=>bot-(bot-top)*(k-lo)/(hi-lo);
+      put({t:'l',x1:IX,x2:IX+IW,y:bot+20,s:SML,lw:2});
+      put({t:'p',pts:W.pts.map((p,i)=>[gx(i),gy(p.k)]),s:SMA,lw:6});
+      W.pts.forEach((p,i)=>{
+        put({t:'c',x:gx(i),y:gy(p.k),r:11,f:'#fff',s:SMA,lw:5});
+        tx(fk(p.k),gx(i),gy(p.k)-24,26,SMI,'center');
+        tx(smDot(p.d).slice(5),gx(i),bot+56,24,SMS,'center')});
+      cy+=240}
+    return cy});
+  if(M.hosp)card('최근 병원 기록',cy=>{
+    M.hosp.forEach((h,i)=>{
+      const L=wrap(32,h.m,IW,3);
+      if(i)sep(cy);
+      tx(h.d,IX,cy+38,28,SMS);
+      L.forEach((s,j)=>tx(s,IX,cy+82+j*42,32,SMI));
+      cy+=66+L.length*42});
+    return cy});
+  if(!M.note&&!M.vacc&&!M.meds&&!M.weight&&!M.hosp)card('요약',cy=>{
+    const L=wrap(30,'넣을 기록이 아직 없어요. 접종·약·체중·병원 기록을 남기면 이곳에 모아서 보여 줘요.',IW,3);
+    L.forEach((s,j)=>tx(s,IX,cy+32+j*46,30,SMS));
+    return cy+L.length*46});
+  tx('너의 꽃길 · '+M.date+' 기준 · 직접 적은 기록이에요',SMW/2,y+22,26,SMS,'center');
+  const H=y+22+60;bg.h=H;
+  return{ops:ops,H:H}}
+
+function smRR(c,x,y,w,h,r){r=Math.min(r,w/2,h/2);c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+function smPaint(c,L){
+  L.ops.forEach(o=>{
+    if(o.t==='r'){c.beginPath();smRR(c,o.x,o.y,o.w,o.h,o.r||0);if(o.f){c.fillStyle=o.f;c.fill()}if(o.s){c.lineWidth=o.lw||2;c.strokeStyle=o.s;c.stroke()}}
+    else if(o.t==='x'){c.font=smFont(o.z);c.fillStyle=o.f;c.textAlign=o.a;c.textBaseline='alphabetic';c.fillText(o.s,o.x,o.y)}
+    else if(o.t==='l'){c.beginPath();c.moveTo(o.x1,o.y);c.lineTo(o.x2,o.y);c.lineWidth=o.lw;c.strokeStyle=o.s;c.stroke()}
+    else if(o.t==='c'){c.beginPath();c.arc(o.x,o.y,o.r,0,7);if(o.f){c.fillStyle=o.f;c.fill()}if(o.s){c.lineWidth=o.lw;c.strokeStyle=o.s;c.stroke()}}
+    else if(o.t==='p'){c.beginPath();o.pts.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.lineWidth=o.lw;c.strokeStyle=o.s;c.lineJoin='round';c.lineCap='round';c.stroke()}
+    else if(o.t==='a'){
+      const r=o.d/2,cx=o.x+r,cy=o.y+r;
+      c.beginPath();c.arc(cx,cy,r+8,0,7);c.fillStyle='#fff';c.fill();
+      c.save();c.beginPath();c.arc(cx,cy,r,0,7);c.clip();
+      if(o.img){const iw=o.img.naturalWidth||o.img.width,ih=o.img.naturalHeight||o.img.height,s=Math.max(o.d/iw,o.d/ih),w=iw*s,h=ih*s;c.drawImage(o.img,cx-w/2,cy-h/2,w,h)}
+      else{c.fillStyle='rgba(255,255,255,.8)';c.fillRect(o.x,o.y,o.d,o.d);c.font='400 '+Math.round(o.d*.56)+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillStyle='#000';c.fillText(o.e,cx,cy+o.d*.04)}
+      c.restore()}})}
+const smImg=u=>new Promise(res=>{if(!u)return res(null);const i=new Image();i.onload=()=>res(i);i.onerror=()=>res(null);i.src=u});
+function smFonts(s){
+  if(!document.fonts||!document.fonts.load)return Promise.resolve();
+  const t=(String(s)+'0123456789kg가나다라마바사아자차카타파하').slice(0,1500);
+  return Promise.race([document.fonts.load('40px Jua',t).catch(()=>0),new Promise(r=>setTimeout(r,4000))])}
+async function smMake(M,img){
+  const L=smLayout(M,document.createElement('canvas').getContext('2d'),img),cv=document.createElement('canvas');
+  cv.width=SMW;cv.height=Math.ceil(L.H);smPaint(cv.getContext('2d'),L);
+  return await new Promise(r=>cv.toBlob(r,'image/png'))}
+
+/* ── 화면 ── */
+function smChips(M){return SMK.map(k=>{const h=M.has[k[0]],on=h&&SM.o[k[0]];return '<button type="button" class="dc'+(on?' on':'')+'"'+(h?'':' disabled')+' aria-pressed="'+!!on+'" onclick="smTog(\''+k[0]+'\')">'+k[1]+(h?'':' · 없음')+'</button>'}).join('')}
+const smEnv=()=>{const C=window.Capacitor,u=navigator.userAgent;return{P:(C&&C.Plugins)||{},native:kgNative(),phone:/Android|iPhone|iPad|iPod/i.test(u),ios:/iPhone|iPad|iPod/i.test(u)}};
+function smCanShare(){const e=smEnv();if(e.native)return true;if(!e.phone||!navigator.canShare)return false;try{return !!navigator.canShare({files:[new File(['x'],'a.png',{type:'image/png'})]})}catch(x){return false}}
+function smSay(t,ms){const e=$('toast');clearTimeout(SM.tt);e.textContent=t;e.classList.add('on');SM.tt=setTimeout(()=>e.classList.remove('on'),ms||2200)}
+function smHush(){clearTimeout(SM.tt);$('toast').classList.remove('on')}
+function smRender(){
+  const d=D(),M=smData(d),my=++SM.seq,c=$('smc');
+  if(c)c.innerHTML=smChips(M);
+  const job=(async()=>{
+    const img=await smImg(M.photo);
+    await smFonts(JSON.stringify(Object.assign({},M,{photo:0})));
+    let b=null;try{b=await smMake(M,img)}catch(e){b=null}
+    if(my!==SM.seq)return;
+    SM.blob=b;
+    const im=$('smi'),p=$('smp'),old=SM.url;
+    if(b){SM.url=URL.createObjectURL(b);if(old)setTimeout(()=>URL.revokeObjectURL(old),1500)}
+    if(!im)return;
+    if(b){im.src=SM.url;im.alt=M.name+' 요약 한 장 미리보기';im.style.display='block';if(p)p.style.display='none'}
+    else{im.style.display='none';if(p){p.style.display='';p.textContent='그림을 만들지 못했어요. 닫았다가 다시 열어 주세요'}}
+  })();
+  SM.pend=job;return job}
+function smTog(k){SM.o[k]=SM.o[k]?0:1;smRender()}
+function sumOpen(){
+  if(!D()){toast('먼저 아이를 등록해 주세요');return}
+  const e=smEnv(),can=smCanShare();
+  sh('요약 한 장',
+    '<div class="smw"><img id="smi" alt="" onclick="smBig()" style="display:none"><div class="small" id="smp">그리는 중이에요…</div></div>'+
+    '<label class="l" style="display:block;margin-top:14px">넣을 내용 (눌러서 켜고 끄기)</label><div class="chips" id="smc"></div>'+
+    '<div class="row2" style="'+(can?'':'grid-template-columns:1fr')+'"><button class="btn" onclick="smSave()">'+(e.native||e.phone?'갤러리에 저장':'이미지로 저장')+'</button>'+(can?'<button class="btn" id="smsh" onclick="smShare()">공유하기</button>':'')+'</div>'+
+    '<p class="small" id="smh" style="margin:10px 0 0">'+(e.native?'저장하면 폰 갤러리의 “너의 꽃길” 앨범에 들어가요. ':e.phone?'저장하면 갤러리의 “다운로드” 앨범에 들어가요. ':'저장하면 다운로드 폴더에 들어가요. ')+'그림을 누르면 크게 볼 수 있어요.</p>');
+  smRender()}
+function smBig(){
+  if(!SM.url)return;
+  sh('요약 크게 보기','<img src="'+SM.url+'" alt="요약 한 장" style="width:100%;height:auto;display:block;border-radius:12px"><p class="small" style="margin:8px 0 12px">인터넷 화면에서는 그림을 길게 누르면 저장할 수 있어요.</p><button class="btn" onclick="sumOpen()">돌아가기</button>')}
+
+/* ── 저장 · 공유 (홍보 카드와 같은 방식) ── */
+const smB64=b=>new Promise((res,rej)=>{const f=new FileReader();f.onload=()=>res(String(f.result).split(',')[1]||'');f.onerror=()=>rej(f.error);f.readAsDataURL(b)});
+async function smPrep(){
+  const w=setTimeout(()=>smSay('그림을 만드는 중이에요…',20000),300);
+  let b=null;
+  try{let p;do{p=SM.pend;if(p)await p}while(SM.pend!==p);b=SM.blob;if(!b){await smRender();b=SM.blob}}finally{clearTimeout(w)}
+  smHush();
+  if(!b){smSay('그림을 만들지 못했어요. 다시 눌러 주세요');return null}
+  const nm=smCl(D().name)||'아이';
+  return{b:b,nm:nm,fn:nm.replace(/[\\\/:*?"<>|]/g,'')+'-요약.png'}}
+function smDown(x){const u=URL.createObjectURL(x.b),a=document.createElement('a');a.href=u;a.download=x.fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),8000)}
+async function smAlbum(x,M){
+  const AL='너의 꽃길';
+  try{await M.createAlbum({name:AL})}catch(e){}
+  let id='';
+  if(M.getAlbumsPath){const r=await M.getAlbumsPath();if(r&&r.path)id=String(r.path).replace(/\/+$/,'')+'/'+AL}
+  if(!id){const r=await M.getAlbums(),a=((r&&r.albums)||[]).filter(z=>z&&z.name===AL)[0];if(a)id=a.identifier}
+  if(!id)throw new Error('albumNotFound');
+  await M.savePhoto({path:'data:image/png;base64,'+await smB64(x.b),albumIdentifier:id,fileName:'kkotgil-summary-'+Date.now()})}
+async function smShare(){
+  if(SM.busy)return;SM.busy=true;
+  try{
+    const x=await smPrep();if(!x)return;
+    const e=smEnv();
+    if(e.native){
+      if(!(e.P.Filesystem&&e.P.Share)){smSay('앱을 새로 만들어야 공유가 돼요',4500);return}
+      const r=await e.P.Filesystem.writeFile({path:'kkotgil-summary-'+Date.now()+'.png',data:await smB64(x.b),directory:'CACHE'});
+      await e.P.Share.share({title:x.nm+' 요약',files:[r.uri],dialogTitle:'요약 공유하기'});return}
+    const f=new File([x.b],x.fn,{type:'image/png'});
+    if(e.phone&&navigator.canShare&&navigator.canShare({files:[f]})){
+      try{await navigator.share({files:[f],title:x.nm+' 요약'});return}catch(err){if(err&&err.name==='AbortError')return}}
+    smDown(x);smSay('공유창을 열 수 없어서 이미지 파일로 저장했어요',3500)
+  }catch(err){if(shGone(err)){smHush();return}smSay('공유하지 못했어요. 다시 눌러 주세요')}
+  finally{SM.busy=false}}
+async function smSave(){
+  if(SM.busy)return;
+  const e=smEnv();
+  if(e.ios&&!e.native)return smShare();
+  SM.busy=true;
+  try{
+    const x=await smPrep();if(!x)return;
+    if(e.native){
+      if(!e.P.Media){
+        SM.busy=false;
+        if(e.P.Filesystem&&e.P.Share){smSay('이 앱에는 갤러리 저장 기능이 아직 없어서 공유창을 열어요',4500);await smShare()}
+        else smSay('앱을 새로 만들어야 저장이 돼요',4500);
+        return}
+      smSay('갤러리에 저장하는 중이에요…',30000);
+      await smAlbum(x,e.P.Media);
+      smSay('갤러리에 저장했어요 · “너의 꽃길” 앨범에서 볼 수 있어요',4500);return}
+    smDown(x);
+    smSay(e.phone?'저장했어요 · 갤러리의 “다운로드” 앨범에서 볼 수 있어요':'이미지를 저장했어요 (다운로드 폴더)',4500)
+  }catch(err){
+    if(shGone(err)){smHush();return}
+    const why=String(err&&(err.code||err.message)||'').replace(/\s+/g,' ').slice(0,40);
+    smSay('저장하지 못했어요'+(why?' ('+why+')':'')+'. “공유하기”로 저장해 보세요',5500)
+  }finally{SM.busy=false}}
 all();shareUi();kgInit();setInterval(()=>{try{mdraw();sum()}catch(e){}},60000);
 </script>
 <script>

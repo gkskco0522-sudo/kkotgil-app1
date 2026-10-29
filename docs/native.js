@@ -63,7 +63,7 @@
     }).then(function (p) {
       if (p.display !== 'granted') { if (notify) say('알림 권한이 꺼져 있어요. 휴대폰 설정에서 알림을 허용해 주세요'); return; }
       return LN.getPending().then(function (pend) {
-        var ids = (pend.notifications || []).map(function (n) { return { id: n.id }; });
+        var ids = (pend.notifications || []).filter(function (n) { return n.id !== TESTID; }).map(function (n) { return { id: n.id }; });
         return ids.length ? LN.cancel({ notifications: ids }) : null;
       }).then(function () {
         var list = build();
@@ -86,6 +86,37 @@
   }
   document.addEventListener('visibilitychange', function () { if (!document.hidden) soon(false); });
   soon(false);
+  /* ── 알림 점검: 설정의 '알림 점검' 카드가 불러다 써요 ── */
+  var TESTID = 2147480000; /* 약·접종 알림 번호(1, 2, 3…)와 겹치지 않는 큰 번호 */
+  function permState() { return LN.checkPermissions().then(function (p) { return p.display; }, function () { return 'prompt'; }); }
+  function info() {
+    var sel = pickSound();
+    return channels().then(function () {
+      return Promise.all([
+        permState(),
+        LN.areEnabled ? LN.areEnabled().then(function (r) { return r.value !== false; }, function () { return true; }) : Promise.resolve(true),
+        LN.checkExactNotificationSetting ? LN.checkExactNotificationSetting().then(function (r) { return r.exact_alarm; }, function () { return 'granted'; }) : Promise.resolve('granted'),
+        LN.getPending().then(function (r) { return (r.notifications || []).filter(function (n) { return n.id !== TESTID; }).length; }, function () { return -1; }),
+        LN.listChannels ? LN.listChannels().then(function (r) { var c = (r.channels || []).filter(function (x) { return x.id === sel; })[0]; return c && typeof c.importance === 'number' ? c.importance : null; }, function () { return null; }) : Promise.resolve(null)
+      ]);
+    }).then(function (a) {
+      var expected = 0; try { expected = build().length; } catch (e) {}
+      return { perm: a[0], enabled: a[1], exact: a[2], pending: a[3], expected: expected, soundId: sel, soundName: SOUNDS[sel], importance: a[4] };
+    });
+  }
+  function test() {
+    return channels().then(permState).then(function (d) {
+      return d === 'granted' ? d : LN.requestPermissions().then(function (p) { return p.display; });
+    }).then(function (d) {
+      if (d !== 'granted') return { ok: false, why: 'perm' };
+      var sel = pickSound(), n = { id: TESTID, title: '테스트 알림', body: '알림이 잘 울려요 🔔 약·접종 알림도 이렇게 울려요', schedule: { at: new Date(Date.now() + 10000), allowWhileIdle: true } };
+      if (ready[sel]) n.channelId = sel;
+      return LN.cancel({ notifications: [{ id: TESTID }] }).then(null, function () {}).then(function () { return LN.schedule({ notifications: [n] }); }).then(function () { return { ok: true }; });
+    }).then(null, function () { return { ok: false, why: 'error' }; });
+  }
+  function ask() { return LN.requestPermissions().then(function (p) { return p.display; }, function () { return 'denied'; }); }
+  function exact() { return LN.changeExactNotificationSetting ? LN.changeExactNotificationSetting().then(function (r) { return r.exact_alarm; }, function () { return 'denied'; }) : Promise.resolve('granted'); }
+  window.__kkotgilNotif = { info: info, test: test, ask: ask, exact: exact, resched: function () { return sync(true); } };
   window.__kkotgilBuild = build;
   /* 계정에서 새 기록을 받아왔을 때, 알림 예약을 조용히(안내 문구 없이) 다시 맞춰요 */
   window.__kkotgilResched = function () { soon(false); };
