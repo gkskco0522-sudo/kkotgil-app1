@@ -23,6 +23,11 @@
   var u = navigator.userAgent || '', c = 'desktop';
   if (/Android/i.test(u)) c = 'android';
   else if (/iPhone|iPad|iPod/i.test(u) || (/Macintosh/i.test(u) && navigator.maxTouchPoints > 1)) c = 'ios';
+  /* 카카오톡·네이버 같은 앱 안의 작은 브라우저면 표시를 더해요. (거기서는 내려받기가 막힐 수 있어서 안내해요) */
+  if (c !== 'desktop') {
+    if (/KAKAOTALK/i.test(u)) c += ' inapp kakao';
+    else if (/NAVER\(|Instagram|FBAN|FBAV|FB_IAB|Line\/|DaumApps|; wv\)/i.test(u)) c += ' inapp';
+  }
   document.documentElement.className += ' ' + c;
 })();
 </script>
@@ -53,7 +58,9 @@ h1{font-family:var(--fh);font-weight:400;font-size:28px;line-height:1.15;margin:
 .lead{order:20;margin:2px 2px 0;color:var(--sub)}
 .notice{order:30;margin:0;padding:12px 14px;border-radius:14px;background:var(--pill);color:var(--ink);font-size:15px}
 .card{background:var(--card);border-radius:20px;padding:20px 18px;box-shadow:var(--shadow);border:1px solid var(--line)}
-#qr{order:40}#android{order:50}#web{order:60}#login{order:70}#help{order:80}.foot{order:90}
+#inapp{order:15}#qr{order:40}#android{order:50}#web{order:60}#login{order:70}#send{order:75}#help{order:80}.foot{order:90}
+.desktop #send{order:45}
+[hidden]{display:none!important}
 h2{font-family:var(--fh);font-weight:400;font-size:21px;line-height:1.3;margin:0 0 12px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}
 .pill{font-family:var(--fb);font-size:13px;line-height:1;padding:6px 10px;border-radius:999px;background:var(--pill);color:var(--sub)}
 p{margin:0 0 10px}
@@ -61,6 +68,9 @@ p{margin:0 0 10px}
 .btn .b2{font-family:var(--fb);font-size:13px;opacity:.92;word-break:break-all}
 .btn.primary{background:var(--bar);color:var(--barink)}
 .btn.second{background:var(--btn);color:var(--btnink)}
+button.btn{width:100%;border:0;cursor:pointer;appearance:none;-webkit-appearance:none}
+.btn+.btn{margin-top:10px}
+.btn[hidden]+.btn{margin-top:0}
 .btn:active{transform:translateY(1px)}
 .btn:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .steps{list-style:none;margin:16px 0 0;padding:0;counter-reset:s}
@@ -84,9 +94,16 @@ summary::after{content:'＋';position:absolute;right:2px;top:12px;color:var(--ac
 details[open] summary::after{content:'－'}
 details p{margin:0 0 14px;color:var(--sub);font-size:15px}
 .foot{margin:2px 4px 0;text-align:center;color:var(--mute);font-size:13px;line-height:1.6}
-.only-ios,.only-desktop{display:none}
-.ios .only-ios,.desktop .only-desktop{display:block}
+.only-ios,.only-desktop,.only-inapp,.only-kakao{display:none}
+.ios .only-ios,.desktop .only-desktop,.inapp .only-inapp{display:block}
+.kakao .only-kakao{display:flex}
 .ios #android{display:none}
+.warn{background:var(--cream);color:var(--creamink);border:2px solid var(--creambd)}
+.warn .small{color:var(--creamink)}
+#sendMsg{margin:0;color:var(--sub);font-size:15px}
+#sendMsg:not(:empty){margin-top:14px}
+.nw{white-space:nowrap}
+.addr{display:inline-block;margin-top:6px;color:var(--ink);font-size:14px;word-break:break-all;user-select:all;-webkit-user-select:all}
 @media (min-width:700px){.wrap{padding-top:36px}}
 </style>
 </head>
@@ -100,6 +117,15 @@ details p{margin:0 0 14px;color:var(--sub);font-size:15px}
       <p class="tag">임시보호 기록 앱 · 테스트 설치 안내</p>
     </div>
   </header>
+
+  <section class="card warn only-inapp" id="inapp" role="note" aria-labelledby="h-inapp">
+    <h2 id="h-inapp">앱 안에서 열었어요</h2>
+    <p>이 화면에서는 <b>앱 내려받기</b>가 막힐 수 있어요. 크롬 같은 <b>기본 브라우저</b>로 열어 주세요.</p>
+    <a class="btn primary only-kakao" id="openExt" href="kakaotalk://web/openExternal?url=https%3A%2F%2Fgkskco0522-sudo.github.io%2Fkkotgil-app1%2Finstall.html">
+      <span>기본 브라우저로 열기</span><span class="b2">누르면 크롬 등으로 옮겨 가요</span>
+    </a>
+    <p class="small">옮겨지지 않으면 화면 구석의 메뉴(⋮ 또는 …)에서 <b>다른 브라우저로 열기</b>를 눌러 주세요.</p>
+  </section>
 
   <p class="lead">테스트에 함께해 주셔서 고마워요! 아래 순서대로 하면 <b>3분쯤</b> 걸려요. 스토어에 있는 앱이 아니라서 설치할 때 안내 화면이 몇 번 나오는데, 정상이에요.</p>
 
@@ -148,6 +174,19 @@ details p{margin:0 0 14px;color:var(--sub);font-size:15px}
     <p><b>나중에 하기</b>를 누르면 로그인 없이 이 폰에만 저장하며 쓸 수 있어요.</p>
     <p class="note">로그인하면 아이 정보·사진·기록이 이 앱을 만든 사람의 서버에 저장되고, 만든 사람이 볼 수 있어요. 원하지 않으면 로그인하지 않고 쓰세요.</p>
     <p class="small">지금은 테스트 중이라 <b>미리 알려 준 구글 계정만</b> 로그인돼요. “액세스 차단됨”이 나오면 만든 사람에게 구글 메일 주소를 알려 주세요.</p>
+    <p class="small">구글 로그인 화면에 <b>‘<span class="nw">kkotgil.workers.dev(으)로</span> 이동’</b>이라고 나와요. 이 앱의 서버 주소라서 정상이에요.</p>
+  </section>
+
+  <section class="card" id="send" hidden aria-labelledby="h-send">
+    <h2 id="h-send">친구에게도 알려 주기</h2>
+    <p>이 안내 페이지의 주소를 카카오톡 등으로 보내요. 받은 사람이 주소를 열면 이 페이지가 나와요.</p>
+    <button type="button" class="btn primary" id="shareBtn" hidden>
+      <span>카카오톡 등으로 보내기</span><span class="b2">공유창이 열려요</span>
+    </button>
+    <button type="button" class="btn second" id="copyBtn">
+      <span>주소 복사하기</span><span class="b2">카톡 대화창에 붙여넣어요</span>
+    </button>
+    <p id="sendMsg" role="status" aria-live="polite"></p>
   </section>
 
   <section class="card" id="help" aria-labelledby="h-help">
@@ -177,5 +216,86 @@ details p{margin:0 0 14px;color:var(--sub);font-size:15px}
   <p class="foot">테스트 중인 앱이라 화면이나 기능이 바뀔 수 있어요.</p>
 
 </main>
+<script>
+/* 이 줄이 안 돌아도 안내 내용은 그대로 보여요. (보내기 칸만 숨겨져 있어요) */
+(function () {
+  var PAGE = 'https://gkskco0522-sudo.github.io/kkotgil-app1/install.html';
+  var TITLE = '너의 꽃길 · 테스트 앱 설치';
+  var MSG = '너의 꽃길 테스트 앱이에요 🐾\n아래 주소를 열고 안내대로 설치해 주세요.';
+  var root = document.documentElement;
+  var has = function (c) { return (' ' + root.className + ' ').indexOf(' ' + c + ' ') >= 0; };
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* 1) 카카오톡 안에서 열렸으면 폰의 기본 브라우저로 옮겨 줘요. (안 옮겨져도 위쪽 버튼으로 직접 옮길 수 있어요) */
+  var here = /^https?:$/.test(location.protocol) ? location.href : PAGE;
+  var ext = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(here);
+  var openBtn = $('openExt');
+  if (openBtn) openBtn.setAttribute('href', ext);
+  if (has('kakao')) {
+    var tried = false;
+    try { tried = sessionStorage.getItem('kgx') === '1'; sessionStorage.setItem('kgx', '1'); } catch (e) {}
+    if (!tried) setTimeout(function () { try { location.href = ext; } catch (e) {} }, 400);
+  }
+
+  /* 2) 주소 보내기 */
+  var send = $('send'), shareBtn = $('shareBtn'), copyBtn = $('copyBtn'), note = $('sendMsg');
+  if (!send || !shareBtn || !copyBtn || !note) return;
+  send.hidden = false;
+
+  function say(text, showAddr) {
+    note.textContent = text;
+    if (showAddr) {
+      var a = document.createElement('span');
+      a.className = 'addr';
+      a.textContent = PAGE;
+      note.appendChild(document.createElement('br'));
+      note.appendChild(a);
+    }
+  }
+  function copyText(text) {
+    return new Promise(function (ok, no) {
+      function legacy() {
+        var ta = document.createElement('textarea'), good = false;
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { ta.setSelectionRange(0, text.length); good = document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta);
+        if (good) ok(); else no(new Error('copy failed'));
+      }
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, legacy);
+        else legacy();
+      } catch (e) { legacy(); }
+    });
+  }
+  function copyAndSay(okText, badText) {
+    copyText(PAGE).then(function () { say(okText); }, function () { say(badText, true); });
+  }
+
+  copyBtn.addEventListener('click', function () {
+    copyAndSay('복사했어요. 카카오톡 대화창에 붙여넣어 보내세요.', '복사하지 못했어요. 아래 주소를 길게 눌러 복사해 주세요.');
+  });
+
+  /* 공유창은 폰에서만 보여요. (컴퓨터는 주소 복사만) */
+  if ((has('android') || has('ios')) && typeof navigator.share === 'function') {
+    shareBtn.hidden = false;
+    var busy = false;
+    shareBtn.addEventListener('click', function () {
+      if (busy) return;
+      busy = true;
+      var p;
+      try { p = navigator.share({ title: TITLE, text: MSG, url: PAGE }); } catch (e) { p = Promise.reject(e); }
+      Promise.resolve(p).then(function () { busy = false; }, function (e) {
+        busy = false;
+        if (e && e.name === 'AbortError') return;   /* 보내다가 닫은 거예요 */
+        copyAndSay('공유창을 열 수 없어서 주소를 복사했어요. 카카오톡 대화창에 붙여넣어 보내세요.', '공유창을 열 수 없어요. 아래 주소를 길게 눌러 복사해 주세요.');
+      });
+    });
+  }
+})();
+</script>
 </body>
 </html>
